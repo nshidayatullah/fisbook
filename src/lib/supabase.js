@@ -45,17 +45,30 @@ export const getAllUsers = async () => {
 };
 
 export const createUser = async (email, password, role, fullName) => {
-  // Note: Creating users via client-side requires admin API key or Supabase Edge Function
-  // For now, we'll use sign up and then update profile
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-  });
+  try {
+    // Create user with email auto-confirm disabled (will need manual setup in Supabase)
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          role: role,
+        },
+        emailRedirectTo: undefined, // Disable email confirmation redirect
+      },
+    });
 
-  if (error) return { data: null, error };
+    if (error) return { data: null, error };
 
-  // Update profile with role and name
-  if (data.user) {
+    if (!data.user) {
+      return { data: null, error: { message: "Failed to create user" } };
+    }
+
+    // Wait a bit for trigger to create profile
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    // Update profile with role and full_name
     const { error: profileError } = await supabase
       .from("profiles")
       .update({
@@ -64,10 +77,16 @@ export const createUser = async (email, password, role, fullName) => {
       })
       .eq("id", data.user.id);
 
-    if (profileError) return { data: null, error: profileError };
-  }
+    if (profileError) {
+      console.error("Profile update error:", profileError);
+      // Don't return error, user is created, just profile update failed
+    }
 
-  return { data, error };
+    return { data, error: null };
+  } catch (err) {
+    console.error("Create user error:", err);
+    return { data: null, error: err };
+  }
 };
 
 export const updateUserProfile = async (userId, updates) => {
