@@ -282,6 +282,7 @@ const Users = () => {
                   className="block w-full rounded-lg bg-white/5 px-4 py-3 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 >
                   <option value="fisioterapis">Fisioterapis</option>
+                  <option value="dokter">Dokter</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
@@ -357,6 +358,7 @@ const Users = () => {
                   className="block w-full rounded-lg bg-white/5 px-4 py-3 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 >
                   <option value="admin">Admin</option>
+                  <option value="dokter">Dokter</option>
                   <option value="fisioterapis">Fisioterapis</option>
                 </select>
               </div>

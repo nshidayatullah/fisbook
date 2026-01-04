@@ -1,17 +1,19 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Dialog, DialogBackdrop, DialogPanel, TransitionChild, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon, HomeIcon, CalendarDaysIcon, KeyIcon, ClipboardDocumentListIcon, BuildingOfficeIcon, ArrowRightOnRectangleIcon, ChevronDownIcon, UserCircleIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon, HomeIcon, CalendarDaysIcon, KeyIcon, ClipboardDocumentListIcon, BuildingOfficeIcon, ArrowRightOnRectangleIcon, ChevronDownIcon, UserCircleIcon, UsersIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../../hooks/useAuth";
-import { signOut } from "../../lib/supabase";
+import { signOut, getUserProfile } from "../../lib/supabase";
 
-const navigation = [
+const allNavigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: HomeIcon },
   { name: "Kelola Slot", href: "/admin/slots", icon: CalendarDaysIcon },
   { name: "Kode Akses", href: "/admin/codes", icon: KeyIcon },
   { name: "Pendaftaran", href: "/admin/registrations", icon: ClipboardDocumentListIcon },
   { name: "Departemen", href: "/admin/departments", icon: BuildingOfficeIcon },
-  { name: "Manajemen User", href: "/admin/users", icon: UserCircleIcon },
+  { name: "Antrian Pasien", href: "/admin/patients", icon: UsersIcon, dokterOnly: true },
+  { name: "Riwayat Pelayanan", href: "/admin/history", icon: ClockIcon, dokterOnly: true },
+  { name: "Manajemen User", href: "/admin/users", icon: UserCircleIcon, adminOnly: true },
 ];
 
 function classNames(...classes) {
@@ -23,6 +25,36 @@ const AdminLayout = () => {
   const location = useLocation();
   const { user, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [userProfile, setUserProfile] = useState(null);
+
+  const loadUserProfile = async () => {
+    if (!user) return;
+
+    try {
+      const { data } = await getUserProfile(user.id);
+      setUserProfile(data);
+    } catch (error) {
+      console.error("Failed to load profile:", error);
+    }
+  };
+
+  useEffect(() => {
+    loadUserProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  // Filter navigation based on role
+  const navigation = allNavigation.filter((item) => {
+    // Hide Users menu for dokter
+    if (item.adminOnly && userProfile?.role === "dokter") {
+      return false;
+    }
+    // Show patient/history menus ONLY for dokter
+    if (item.dokterOnly && userProfile?.role !== "dokter") {
+      return false;
+    }
+    return true;
+  });
 
   const handleSignOut = async () => {
     await signOut();

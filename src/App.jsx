@@ -15,6 +15,9 @@ import Codes from "./pages/admin/Codes";
 import Registrations from "./pages/admin/Registrations";
 import Departments from "./pages/admin/Departments";
 import Users from "./pages/admin/Users";
+import DokterPatients from "./pages/admin/DokterPatients";
+import DokterPatientDetail from "./pages/admin/DokterPatientDetail";
+import DokterHistory from "./pages/admin/DokterHistory";
 
 // Fisioterapis Pages
 import FisioterapisLogin from "./pages/fisioterapis/Login";
@@ -43,6 +46,9 @@ function App() {
             <Route path="registrations" element={<Registrations />} />
             <Route path="departments" element={<Departments />} />
             <Route path="users" element={<Users />} />
+            <Route path="patients" element={<DokterPatients />} />
+            <Route path="patient/:id" element={<DokterPatientDetail />} />
+            <Route path="history" element={<DokterHistory />} />
           </Route>
 
           {/* Fisioterapis Routes */}
