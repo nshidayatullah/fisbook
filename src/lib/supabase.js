@@ -131,7 +131,20 @@ export const generateAccessCodes = async (count) => {
 };
 
 export const getAllAccessCodes = async () => {
-  const { data, error } = await supabase.from("access_codes").select("*").order("created_at", { ascending: false });
+  const { data, error } = await supabase
+    .from("access_codes")
+    .select(
+      `
+      *,
+      registrations (
+        id,
+        nama_lengkap,
+        nik,
+        created_at
+      )
+    `
+    )
+    .order("created_at", { ascending: false });
 
   return { data, error };
 };

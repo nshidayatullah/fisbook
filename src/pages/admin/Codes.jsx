@@ -274,7 +274,20 @@ const Codes = () => {
                     )}
                   </div>
                 </div>
-                {code.is_used && <span className="mt-2 inline-block rounded-full bg-white/5 px-2 py-0.5 text-xs font-medium text-gray-500">Sudah digunakan</span>}
+
+                {/* Used status & patient info */}
+                {code.is_used && (
+                  <div className="mt-3 space-y-2">
+                    <span className="inline-block rounded-full bg-white/5 px-2 py-0.5 text-xs font-medium text-gray-500">Sudah digunakan</span>
+                    {code.registrations && code.registrations.length > 0 && (
+                      <div className="mt-2 rounded-lg bg-white/5 p-3 border border-white/5">
+                        <p className="text-xs text-gray-500 mb-1">Digunakan oleh:</p>
+                        <p className="text-sm font-semibold text-gray-300">{code.registrations[0].nama_lengkap}</p>
+                        <p className="text-xs text-gray-500 mt-1">NIK: {code.registrations[0].nik}</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
           </div>
