@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircleIcon, PhoneIcon, UserIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, PhoneIcon, UserIcon, ChevronRightIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 import { getCompletedPatients } from "../../lib/supabase";
+import * as XLSX from "xlsx";
 
 const DokterHistory = () => {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     loadPatients();
@@ -24,6 +26,62 @@ const DokterHistory = () => {
       setError("Gagal memuat data riwayat");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const exportToExcel = () => {
+    setExporting(true);
+
+    try {
+      // Prepare data for Excel
+      const excelData = patients.map((patient, index) => ({
+        No: index + 1,
+        "Nama Lengkap": patient.nama_lengkap || "-",
+        NIK: patient.nik || "-",
+        "No. HP": patient.no_hp || "-",
+        Departemen: patient.departments?.name || "-",
+        Keluhan: patient.keluhan || "-",
+        "Tanggal Kunjungan": formatDateTime(patient.tanggal_kunjungan),
+        Anamnesa: patient.anamnesa || "-",
+        "Pemeriksaan Fisik": patient.pemeriksaan_fisik || "-",
+        "Tindakan Dilakukan": patient.tindakan_dilakukan || "-",
+        "Rencana Tindakan": patient.rencana_tindakan || "-",
+      }));
+
+      // Create worksheet
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+
+      // Set column widths
+      const columnWidths = [
+        { wch: 5 }, // No
+        { wch: 25 }, // Nama
+        { wch: 18 }, // NIK
+        { wch: 15 }, // HP
+        { wch: 20 }, // Departemen
+        { wch: 40 }, // Keluhan
+        { wch: 20 }, // Tanggal
+        { wch: 40 }, // Anamnesa
+        { wch: 40 }, // Pemeriksaan
+        { wch: 40 }, // Tindakan
+        { wch: 40 }, // Rencana
+      ];
+      worksheet["!cols"] = columnWidths;
+
+      // Create workbook
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Riwayat Pelayanan");
+
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().split("T")[0];
+      const filename = `Riwayat_Pelayanan_${timestamp}.xlsx`;
+
+      // Download file
+      XLSX.writeFile(workbook, filename);
+    } catch (err) {
+      console.error("Export error:", err);
+      setError("Gagal export data ke Excel");
+    } finally {
+      setExporting(false);
     }
   };
 
@@ -61,8 +119,21 @@ const DokterHistory = () => {
             <h2 className="text-2xl font-bold">Riwayat Pelayanan</h2>
             <p className="mt-1 text-emerald-100">Pasien yang telah dilayani</p>
           </div>
-          <div className="hidden sm:block">
-            <CheckCircleIcon className="h-16 w-16 text-emerald-300/30" />
+          <div className="flex items-center gap-3">
+            {patients.length > 0 && (
+              <button
+                onClick={exportToExcel}
+                disabled={exporting}
+                className="flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border border-white/20"
+                title="Download Excel"
+              >
+                <ArrowDownTrayIcon className="h-5 w-5" />
+                <span className="hidden sm:inline">{exporting ? "Exporting..." : "Download Excel"}</span>
+              </button>
+            )}
+            <div className="hidden md:block">
+              <CheckCircleIcon className="h-16 w-16 text-emerald-300/30" />
+            </div>
           </div>
         </div>
       </div>

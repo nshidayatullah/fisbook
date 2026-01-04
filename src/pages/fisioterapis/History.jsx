@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircleIcon, CalendarIcon, PhoneIcon, UserIcon, ChevronRightIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { CheckCircleIcon, CalendarIcon, PhoneIcon, UserIcon, ChevronRightIcon, TrashIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline";
 import { getCompletedPatients, deleteRegistration } from "../../lib/supabase";
 import ConfirmModal from "../../components/ui/ConfirmModal";
+import * as XLSX from "xlsx";
 
 const History = () => {
   const [patients, setPatients] = useState([]);
@@ -10,6 +11,7 @@ const History = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [deleteModal, setDeleteModal] = useState({ open: false, patientId: null, patientName: "" });
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     loadPatients();
@@ -64,13 +66,40 @@ const History = () => {
     }
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return "-";
-    return new Date(dateString).toLocaleDateString("id-ID", {
-      day: "numeric",
-      month: "short",
-      year: "numeric",
-    });
+  const exportToExcel = () => {
+    setExporting(true);
+
+    try {
+      const excelData = patients.map((patient, index) => ({
+        No: index + 1,
+        "Nama Lengkap": patient.nama_lengkap || "-",
+        NIK: patient.nik || "-",
+        "No. HP": patient.no_hp || "-",
+        Departemen: patient.departments?.name || "-",
+        Keluhan: patient.keluhan || "-",
+        "Tanggal Kunjungan": formatDateTime(patient.tanggal_kunjungan),
+        Anamnesa: patient.anamnesa || "-",
+        "Pemeriksaan Fisik": patient.pemeriksaan_fisik || "-",
+        "Tindakan Dilakukan": patient.tindakan_dilakukan || "-",
+        "Rencana Tindakan": patient.rencana_tindakan || "-",
+      }));
+
+      const worksheet = XLSX.utils.json_to_sheet(excelData);
+      worksheet["!cols"] = [{ wch: 5 }, { wch: 25 }, { wch: 18 }, { wch: 15 }, { wch: 20 }, { wch: 40 }, { wch: 20 }, { wch: 40 }, { wch: 40 }, { wch: 40 }, { wch: 40 }];
+
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Riwayat Pelayanan");
+
+      const timestamp = new Date().toISOString().split("T")[0];
+      const filename = `Riwayat_Pelayanan_${timestamp}.xlsx`;
+
+      XLSX.writeFile(workbook, filename);
+    } catch (err) {
+      console.error("Export error:", err);
+      setError("Gagal export data ke Excel");
+    } finally {
+      setExporting(false);
+    }
   };
 
   const formatDateTime = (dateString) => {
@@ -119,8 +148,21 @@ const History = () => {
             <h2 className="text-2xl font-bold">Riwayat Pelayanan</h2>
             <p className="mt-1 text-blue-100">Pasien yang telah dilayani</p>
           </div>
-          <div className="hidden sm:block">
-            <CheckCircleIcon className="h-16 w-16 text-blue-300/30" />
+          <div className="flex items-center gap-3">
+            {patients.length > 0 && (
+              <button
+                onClick={exportToExcel}
+                disabled={exporting}
+                className="flex items-center gap-2 rounded-lg bg-white/20 px-4 py-2 text-sm font-semibold text-white hover:bg-white/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed backdrop-blur-sm border border-white/20"
+                title="Download Excel"
+              >
+                <ArrowDownTrayIcon className="h-5 w-5" />
+                <span className="hidden sm:inline">{exporting ? "Exporting..." : "Download Excel"}</span>
+              </button>
+            )}
+            <div className="hidden md:block">
+              <CheckCircleIcon className="h-16 w-16 text-blue-300/30" />
+            </div>
           </div>
         </div>
       </div>
