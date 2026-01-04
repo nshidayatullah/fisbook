@@ -176,6 +176,12 @@ export const getAllRegistrations = async () => {
   return { data, error };
 };
 
+export const deleteRegistration = async (id) => {
+  const { error } = await supabase.from("registrations").delete().eq("id", id);
+
+  return { error };
+};
+
 // Dashboard Stats
 // Dashboard Stats
 export const getDashboardStats = async () => {

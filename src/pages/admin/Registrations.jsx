@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
-import { MagnifyingGlassIcon, ClipboardDocumentListIcon, CalendarIcon, PhoneIcon, UserIcon } from "@heroicons/react/24/outline";
-import { getRegistrations } from "../../lib/supabase";
+import { MagnifyingGlassIcon, ClipboardDocumentListIcon, CalendarIcon, PhoneIcon, UserIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { getRegistrations, deleteRegistration } from "../../lib/supabase";
+import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const Registrations = () => {
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [deleteModal, setDeleteModal] = useState({ open: false, regId: null, regName: "" });
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     loadRegistrations();
@@ -42,6 +45,35 @@ const Registrations = () => {
     return `${String(hour).padStart(2, "0")}:00`;
   };
 
+  const openDeleteModal = (reg) => {
+    setDeleteModal({ open: true, regId: reg.id, regName: reg.nama_lengkap });
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ open: false, regId: null, regName: "" });
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deleteModal.regId) return;
+
+    // Optimistic update
+    const previousRegistrations = [...registrations];
+    const idToDelete = deleteModal.regId;
+
+    setRegistrations((prev) => prev.filter((r) => r.id !== idToDelete));
+    closeDeleteModal();
+    setSuccess("Pendaftaran berhasil dihapus");
+
+    try {
+      const { error } = await deleteRegistration(idToDelete);
+      if (error) throw error;
+    } catch (err) {
+      console.error(err);
+      setRegistrations(previousRegistrations);
+      setError("Gagal menghapus pendaftaran");
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
@@ -58,10 +90,49 @@ const Registrations = () => {
 
   return (
     <div className="space-y-6">
+      {/* Delete Confirmation Modal */}
+      <ConfirmModal
+        open={deleteModal.open}
+        onClose={closeDeleteModal}
+        onConfirm={handleConfirmDelete}
+        title="Hapus Pendaftaran"
+        message={`Apakah Anda yakin ingin menghapus pendaftaran atas nama "${deleteModal.regName}"? Tindakan ini tidak dapat dibatalkan.`}
+        confirmText="Ya, Hapus"
+        cancelText="Batal"
+        type="danger"
+      />
+
       {/* Error Alert */}
       {error && (
-        <div className="rounded-lg border-l-4 border-red-500 bg-red-500/10 p-4">
-          <p className="text-sm text-red-400">{error}</p>
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4">
+          <div className="flex text-red-400">
+            <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                fillRule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <p className="ml-3 text-sm">{error}</p>
+            <button onClick={() => setError("")} className="ml-auto hover:text-red-300">
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Success Alert */}
+      {success && (
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4">
+          <div className="flex text-emerald-400">
+            <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z" clipRule="evenodd" />
+            </svg>
+            <p className="ml-3 text-sm">{success}</p>
+            <button onClick={() => setSuccess("")} className="ml-auto hover:text-emerald-300">
+              ×
+            </button>
+          </div>
         </div>
       )}
 
@@ -149,13 +220,20 @@ const Registrations = () => {
                     </div>
                   </div>
 
-                  {/* Right: Schedule */}
-                  <div className="flex items-center gap-3 rounded-xl bg-indigo-500/10 px-4 py-3 border border-indigo-500/20 sm:min-w-[180px]">
-                    <CalendarIcon className="h-5 w-5 text-indigo-400" />
-                    <div>
-                      <p className="text-sm font-semibold text-indigo-200">{formatDate(reg.slots?.date)}</p>
-                      <p className="text-sm text-indigo-400">{formatHour(reg.slots?.hour)}</p>
+                  {/* Right: Schedule and Actions */}
+                  <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3 rounded-xl bg-indigo-500/10 px-4 py-3 border border-indigo-500/20 sm:min-w-[180px]">
+                      <CalendarIcon className="h-5 w-5 text-indigo-400" />
+                      <div>
+                        <p className="text-sm font-semibold text-indigo-200">{formatDate(reg.slots?.date)}</p>
+                        <p className="text-sm text-indigo-400">{formatHour(reg.slots?.hour)}</p>
+                      </div>
                     </div>
+
+                    {/* Delete Button */}
+                    <button onClick={() => openDeleteModal(reg)} className="rounded-lg p-2 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors" title="Hapus pendaftaran">
+                      <TrashIcon className="h-5 w-5" />
+                    </button>
                   </div>
                 </div>
 
