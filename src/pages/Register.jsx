@@ -126,8 +126,8 @@ const Register = () => {
         if (slotError.message.includes("constraint")) {
           setError("Slot sudah dipesan orang lain. Silakan pilih slot lain.");
           loadData();
-        } else {
-          setError("Gagal memesan slot. Silakan coba lagi.");
+          console.error("Slot booking error:", slotError);
+          setError(`Gagal memesan slot: ${slotError.message || "Unknown error"}`);
         }
         setSubmitting(false);
         return;
@@ -135,7 +135,8 @@ const Register = () => {
 
       const { error: codeError } = await markCodeAsUsed(accessCode.id);
       if (codeError) {
-        setError("Gagal memproses kode akses.");
+        console.error("Access code error:", codeError);
+        setError(`Gagal memproses kode akses: ${codeError.message}`);
         setSubmitting(false);
         return;
       }
@@ -153,7 +154,8 @@ const Register = () => {
       const { data: registration, error: regError } = await createRegistration(registrationData);
 
       if (regError) {
-        setError("Gagal menyimpan pendaftaran.");
+        console.error("Registration error:", regError);
+        setError(`Gagal menyimpan pendaftaran: ${regError.message}`);
         setSubmitting(false);
         return;
       }
