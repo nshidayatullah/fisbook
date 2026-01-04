@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { UsersIcon, PlusIcon, PencilIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
+import { UsersIcon, PlusIcon, PencilIcon, TrashIcon, CheckIcon, KeyIcon } from "@heroicons/react/24/outline";
 import { getAllUsers, createUser, updateUserProfile, deleteUser } from "../../lib/supabase";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
@@ -12,6 +12,7 @@ const Users = () => {
   // Form states
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState(false);
 
@@ -26,6 +27,12 @@ const Users = () => {
     id: null,
     full_name: "",
     role: "",
+  });
+
+  const [resetData, setResetData] = useState({
+    userId: null,
+    userName: "",
+    userEmail: "",
   });
 
   // Delete modal
@@ -142,6 +149,15 @@ const Users = () => {
       setUsers(previousUsers);
       setError("Gagal menghapus user");
     }
+  };
+
+  const openResetModal = (user) => {
+    setResetData({
+      userId: user.id,
+      userName: user.full_name || user.email,
+      userEmail: user.email,
+    });
+    setShowResetModal(true);
   };
 
   const getRoleBadge = (role) => {
@@ -305,6 +321,9 @@ const Users = () => {
                   <button onClick={() => openEditModal(user)} className="rounded-lg p-2 text-gray-400 hover:bg-indigo-500/10 hover:text-indigo-400 transition-colors" title="Edit User">
                     <PencilIcon className="h-5 w-5" />
                   </button>
+                  <button onClick={() => openResetModal(user)} className="rounded-lg p-2 text-gray-400 hover:bg-yellow-500/10 hover:text-yellow-400 transition-colors" title="Reset Password">
+                    <KeyIcon className="h-5 w-5" />
+                  </button>
                   <button onClick={() => openDeleteModal(user)} className="rounded-lg p-2 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors" title="Hapus user">
                     <TrashIcon className="h-5 w-5" />
                   </button>
@@ -350,6 +369,68 @@ const Users = () => {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Reset Password Modal */}
+      {showResetModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-gray-800 rounded-2xl p-6 max-w-lg w-full border border-white/10">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-yellow-500/20">
+                <KeyIcon className="h-6 w-6 text-yellow-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-white">Reset Password User</h3>
+            </div>
+
+            <div className="space-y-4 text-sm text-gray-300">
+              <div className="rounded-lg bg-gray-900/50 p-4 border border-white/5">
+                <p className="text-white font-medium">User: {resetData.userName}</p>
+                <p className="text-gray-400 mt-1">Email: {resetData.userEmail}</p>
+              </div>
+
+              <div className="rounded-lg bg-yellow-500/10 border border-yellow-500/20 p-4">
+                <p className="text-yellow-400 font-medium mb-2">ℹ️ Cara Reset Password:</p>
+                <ol className="space-y-2 text-gray-300 list-decimal list-inside">
+                  <li>
+                    Buka <strong>Supabase Dashboard</strong>
+                  </li>
+                  <li>
+                    Pilih <strong>Authentication → Users</strong>
+                  </li>
+                  <li>
+                    Cari user: <code className="bg-gray-900 px-2 py-0.5 rounded text-yellow-400">{resetData.userEmail}</code>
+                  </li>
+                  <li>Klik pada user tersebut</li>
+                  <li>
+                    Klik <strong>"Reset Password"</strong> atau <strong>"Send recovery email"</strong>
+                  </li>
+                </ol>
+              </div>
+
+              <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-4">
+                <p className="text-blue-400 font-medium mb-2">🔗 Quick Link:</p>
+                <a
+                  href={`https://supabase.com/dashboard/project/${import.meta.env.VITE_SUPABASE_URL?.split(".")[0]?.replace("https://", "")}/auth/users`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-300 hover:text-blue-200 underline break-all"
+                >
+                  Buka Supabase Authentication →
+                </a>
+              </div>
+
+              <div className="text-xs text-gray-500 border-t border-white/5 pt-3">
+                💡 <strong>Tips:</strong> Setelah reset, user akan menerima email untuk set password baru. Pastikan Email Auth sudah aktif di Supabase.
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 mt-6">
+              <button type="button" onClick={() => setShowResetModal(false)} className="rounded-lg bg-gray-700 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-600">
+                Tutup
+              </button>
+            </div>
           </div>
         </div>
       )}

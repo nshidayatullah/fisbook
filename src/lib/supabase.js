@@ -103,6 +103,14 @@ export const deleteUser = async (userId) => {
   return { error };
 };
 
+export const sendPasswordResetEmail = async (email) => {
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/`,
+  });
+
+  return { data, error };
+};
+
 // Access Codes
 export const validateAccessCode = async (code) => {
   const { data, error } = await supabase.from("access_codes").select("*").eq("code", code).eq("is_used", false).single();
