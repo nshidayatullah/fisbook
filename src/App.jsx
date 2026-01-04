@@ -15,6 +15,13 @@ import Codes from "./pages/admin/Codes";
 import Registrations from "./pages/admin/Registrations";
 import Departments from "./pages/admin/Departments";
 
+// Fisioterapis Pages
+import FisioterapisLogin from "./pages/fisioterapis/Login";
+import FisioterapisLayout from "./pages/fisioterapis/FisioterapisLayout";
+import FisioterApisDashboard from "./pages/fisioterapis/Dashboard";
+import PatientDetail from "./pages/fisioterapis/PatientDetail";
+import History from "./pages/fisioterapis/History";
+
 function App() {
   return (
     <AuthProvider>
@@ -34,6 +41,15 @@ function App() {
             <Route path="codes" element={<Codes />} />
             <Route path="registrations" element={<Registrations />} />
             <Route path="departments" element={<Departments />} />
+          </Route>
+
+          {/* Fisioterapis Routes */}
+          <Route path="/fisioterapis/login" element={<FisioterapisLogin />} />
+          <Route path="/fisioterapis" element={<FisioterapisLayout />}>
+            <Route index element={<Navigate to="/fisioterapis/dashboard" replace />} />
+            <Route path="dashboard" element={<FisioterApisDashboard />} />
+            <Route path="history" element={<History />} />
+            <Route path="patient/:id" element={<PatientDetail />} />
           </Route>
 
           {/* Catch all */}

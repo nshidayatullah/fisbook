@@ -30,6 +30,13 @@ export const getCurrentUser = async () => {
   return user;
 };
 
+// Get user profile with role
+export const getUserProfile = async (userId) => {
+  const { data, error } = await supabase.from("profiles").select("*").eq("id", userId).single();
+
+  return { data, error };
+};
+
 // Access Codes
 export const validateAccessCode = async (code) => {
   const { data, error } = await supabase.from("access_codes").select("*").eq("code", code).eq("is_used", false).single();
@@ -180,6 +187,77 @@ export const deleteRegistration = async (id) => {
   const { error } = await supabase.from("registrations").delete().eq("id", id);
 
   return { error };
+};
+
+// Fisioterapis Functions
+export const getPendingPatients = async () => {
+  const { data, error } = await supabase
+    .from("registrations")
+    .select(
+      `
+      *,
+      slots (date, hour),
+      departments (name),
+      access_codes (code)
+    `
+    )
+    .eq("status_kunjungan", "pending")
+    .order("created_at", { ascending: false });
+
+  return { data, error };
+};
+
+export const getCompletedPatients = async () => {
+  const { data, error } = await supabase
+    .from("registrations")
+    .select(
+      `
+      *,
+      slots (date, hour),
+      departments (name),
+      access_codes (code)
+    `
+    )
+    .eq("status_kunjungan", "selesai")
+    .order("tanggal_kunjungan", { ascending: false });
+
+  return { data, error };
+};
+
+export const getPatientDetail = async (id) => {
+  const { data, error } = await supabase
+    .from("registrations")
+    .select(
+      `
+      *,
+      slots (date, hour),
+      departments (name),
+      access_codes (code)
+    `
+    )
+    .eq("id", id)
+    .single();
+
+  return { data, error };
+};
+
+export const updateMedicalRecord = async (id, medicalData) => {
+  const { data, error } = await supabase
+    .from("registrations")
+    .update({
+      anamnesa: medicalData.anamnesa,
+      pemeriksaan_fisik: medicalData.pemeriksaan_fisik,
+      tindakan_dilakukan: medicalData.tindakan_dilakukan,
+      rencana_tindakan: medicalData.rencana_tindakan,
+      status_kunjungan: "selesai",
+      tanggal_kunjungan: medicalData.tanggal_kunjungan || new Date().toISOString(),
+      fisioterapis_id: medicalData.fisioterapis_id,
+    })
+    .eq("id", id)
+    .select()
+    .single();
+
+  return { data, error };
 };
 
 // Dashboard Stats

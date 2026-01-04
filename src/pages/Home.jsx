@@ -155,9 +155,13 @@ const Home = () => {
         {/* Footer */}
         <div className="mt-8 text-center text-xs text-gray-500 sm:mt-0">
           <p>&copy; 2026 PhysioBook. All rights reserved.</p>
-          <div className="mt-2 text-center">
+          <div className="mt-2 flex items-center justify-center gap-3 text-center">
             <a href="/admin/login" className="text-gray-600 hover:text-white transition-colors">
               Login Admin
+            </a>
+            <span className="text-gray-700">·</span>
+            <a href="/fisioterapis/login" className="text-gray-600 hover:text-white transition-colors">
+              Login Fisioterapis
             </a>
           </div>
         </div>
