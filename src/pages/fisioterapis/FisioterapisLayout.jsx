@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { Bars3Icon, XMarkIcon, ArrowRightOnRectangleIcon, ClipboardDocumentListIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import { signOut, getCurrentUser, getUserProfile } from "../../lib/supabase";
-import Footer from "../../components/ui/Footer";
+import AppFooter from "../../components/ui/AppFooter";
 
 const navigation = [
   { name: "Antrian Pasien", href: "/fisioterapis/dashboard", icon: ClipboardDocumentListIcon },
@@ -179,7 +179,7 @@ const FisioterapisLayout = () => {
             <Outlet />
           </div>
         </main>
-        <Footer />
+        <AppFooter />
       </div>
     </div>
   );
