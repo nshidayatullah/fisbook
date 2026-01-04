@@ -4,6 +4,7 @@ import { Dialog, DialogBackdrop, DialogPanel, TransitionChild, Menu, MenuButton,
 import { Bars3Icon, XMarkIcon, HomeIcon, CalendarDaysIcon, KeyIcon, ClipboardDocumentListIcon, BuildingOfficeIcon, ArrowRightOnRectangleIcon, ChevronDownIcon, UserCircleIcon, UsersIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../../hooks/useAuth";
 import { signOut, getUserProfile } from "../../lib/supabase";
+import Footer from "../../components/ui/Footer";
 
 const allNavigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: HomeIcon },
@@ -243,6 +244,7 @@ const AdminLayout = () => {
             <Outlet />
           </div>
         </main>
+        <Footer />
       </div>
     </div>
   );

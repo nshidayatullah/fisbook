@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { validateAccessCode } from "../lib/supabase";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
+import Footer from "../components/ui/Footer";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -166,6 +167,8 @@ const Home = () => {
           </div>
         </div>
       </div>
+
+      <Footer />
     </div>
   );
 };
