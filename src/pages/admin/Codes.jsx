@@ -248,48 +248,72 @@ const Codes = () => {
             <p className="mt-3 text-sm text-gray-400">Tidak ada kode</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 p-6 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredCodes.map((code) => (
-              <div
-                key={code.id}
-                className={`group relative rounded-xl p-4 border transition-all ${
-                  code.is_used ? "bg-white/5 border-white/5 opacity-60" : "bg-gray-800/50 border-white/10 hover:border-indigo-500/50 hover:shadow-lg hover:shadow-indigo-500/10"
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold ${code.is_used ? "bg-white/5 text-gray-500" : "bg-indigo-500/20 text-indigo-400"}`}>#</span>
-                    <span className={`font-mono text-xl font-bold tracking-widest ${code.is_used ? "text-gray-500 line-through" : "text-white"}`}>{code.code}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    {!code.is_used && (
-                      <>
-                        <button onClick={() => copyToClipboard(code.code, code.id)} className="rounded-lg p-2 text-gray-400 hover:bg-white/10 hover:text-white transition-colors" title="Salin">
-                          {copiedId === code.id ? <CheckIcon className="h-5 w-5 text-emerald-400" /> : <ClipboardIcon className="h-5 w-5" />}
-                        </button>
-                        <button onClick={() => openDeleteModal(code.id)} className="rounded-lg p-2 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors" title="Hapus">
-                          <TrashIcon className="h-5 w-5" />
-                        </button>
-                      </>
-                    )}
-                  </div>
-                </div>
-
-                {/* Used status & patient info */}
-                {code.is_used && (
-                  <div className="mt-3 space-y-2">
-                    <span className="inline-block rounded-full bg-white/5 px-2 py-0.5 text-xs font-medium text-gray-500">Sudah digunakan</span>
-                    {code.registrations && code.registrations.length > 0 && (
-                      <div className="mt-2 rounded-lg bg-white/5 p-3 border border-white/5">
-                        <p className="text-xs text-gray-500 mb-1">Digunakan oleh:</p>
-                        <p className="text-sm font-semibold text-gray-300">{code.registrations[0].nama_lengkap}</p>
-                        <p className="text-xs text-gray-500 mt-1">NIK: {code.registrations[0].nik}</p>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-white/5 bg-gray-900/50">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Kode</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Status</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Digunakan Oleh</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">NIK</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Aksi</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {filteredCodes.map((code) => (
+                  <tr key={code.id} className={`hover:bg-white/5 transition-colors ${code.is_used ? "opacity-60" : ""}`}>
+                    {/* Kode Column */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center gap-3">
+                        <span className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold ${code.is_used ? "bg-white/5 text-gray-500" : "bg-indigo-500/20 text-indigo-400"}`}>#</span>
+                        <span className={`font-mono text-lg font-bold tracking-widest ${code.is_used ? "text-gray-500 line-through" : "text-white"}`}>{code.code}</span>
                       </div>
-                    )}
-                  </div>
-                )}
-              </div>
-            ))}
+                    </td>
+
+                    {/* Status Column */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {code.is_used ? (
+                        <span className="inline-flex items-center rounded-full bg-white/5 px-3 py-1 text-xs font-medium text-gray-500">Terpakai</span>
+                      ) : (
+                        <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">Tersedia</span>
+                      )}
+                    </td>
+
+                    {/* Patient Name Column */}
+                    <td className="px-6 py-4">
+                      {code.registrations && code.registrations.length > 0 ? (
+                        <div className="text-sm">
+                          <p className="font-semibold text-gray-300">{code.registrations[0].nama_lengkap}</p>
+                        </div>
+                      ) : (
+                        <span className="text-sm text-gray-500">-</span>
+                      )}
+                    </td>
+
+                    {/* NIK Column */}
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {code.registrations && code.registrations.length > 0 ? <p className="text-sm text-gray-400 font-mono">{code.registrations[0].nik}</p> : <span className="text-sm text-gray-500">-</span>}
+                    </td>
+
+                    {/* Action Column */}
+                    <td className="px-6 py-4 whitespace-nowrap text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        {!code.is_used && (
+                          <>
+                            <button onClick={() => copyToClipboard(code.code, code.id)} className="rounded-lg p-2 text-gray-400 hover:bg-white/10 hover:text-white transition-colors" title="Salin">
+                              {copiedId === code.id ? <CheckIcon className="h-5 w-5 text-emerald-400" /> : <ClipboardIcon className="h-5 w-5" />}
+                            </button>
+                            <button onClick={() => openDeleteModal(code.id)} className="rounded-lg p-2 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors" title="Hapus">
+                              <TrashIcon className="h-5 w-5" />
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
