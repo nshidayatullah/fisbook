@@ -63,9 +63,8 @@ const Home = () => {
         return;
       }
 
-      // Save code to local storage for Register page to use
-      localStorage.setItem("accessCode", fullCode);
-      localStorage.setItem("accessCodeId", data.id);
+      // Save access code data to sessionStorage for Register page
+      sessionStorage.setItem("accessCode", JSON.stringify(data));
 
       navigate("/register");
     } catch {
