@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/ui/Footer";
 
 const Success = () => {
   const navigate = useNavigate();
@@ -169,6 +170,7 @@ const Success = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

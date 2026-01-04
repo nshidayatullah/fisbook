@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getSlotsGroupedByDate, getDepartments, createRegistration, markCodeAsUsed, bookSlot } from "../lib/supabase";
+import Footer from "../components/ui/Footer";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -492,6 +493,7 @@ const Register = () => {
           </button>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
