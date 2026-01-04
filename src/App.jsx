@@ -5,6 +5,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import Success from "./pages/Success";
+import UnifiedLogin from "./pages/Login";
 
 // Admin Pages
 import Login from "./pages/admin/Login";
@@ -35,6 +36,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/register" element={<Register />} />
           <Route path="/success" element={<Success />} />
+          <Route path="/login" element={<UnifiedLogin />} />
 
           {/* Admin Routes */}
           <Route path="/admin/login" element={<Login />} />
