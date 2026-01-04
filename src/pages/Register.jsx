@@ -332,11 +332,13 @@ const Register = () => {
                     }`}
                   >
                     <option value="">Pilih departemen</option>
-                    {departments.map((d) => (
-                      <option key={d.id} value={d.id}>
-                        {d.name}
-                      </option>
-                    ))}
+                    {departments
+                      .filter((d) => d.name && typeof d.name === "string" && !d.name.startsWith("{"))
+                      .map((d) => (
+                        <option key={d.id} value={d.id}>
+                          {d.name}
+                        </option>
+                      ))}
                   </select>
                 </div>
                 {errors.department_id && <p className="mt-2 text-sm text-red-600">{errors.department_id}</p>}
