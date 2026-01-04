@@ -14,6 +14,7 @@ import Slots from "./pages/admin/Slots";
 import Codes from "./pages/admin/Codes";
 import Registrations from "./pages/admin/Registrations";
 import Departments from "./pages/admin/Departments";
+import Users from "./pages/admin/Users";
 
 // Fisioterapis Pages
 import FisioterapisLogin from "./pages/fisioterapis/Login";
@@ -41,6 +42,7 @@ function App() {
             <Route path="codes" element={<Codes />} />
             <Route path="registrations" element={<Registrations />} />
             <Route path="departments" element={<Departments />} />
+            <Route path="users" element={<Users />} />
           </Route>
 
           {/* Fisioterapis Routes */}

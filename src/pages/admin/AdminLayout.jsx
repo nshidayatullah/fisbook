@@ -11,6 +11,7 @@ const navigation = [
   { name: "Kode Akses", href: "/admin/codes", icon: KeyIcon },
   { name: "Pendaftaran", href: "/admin/registrations", icon: ClipboardDocumentListIcon },
   { name: "Departemen", href: "/admin/departments", icon: BuildingOfficeIcon },
+  { name: "Manajemen User", href: "/admin/users", icon: UserCircleIcon },
 ];
 
 function classNames(...classes) {

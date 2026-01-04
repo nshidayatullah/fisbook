@@ -37,6 +37,53 @@ export const getUserProfile = async (userId) => {
   return { data, error };
 };
 
+// User Management (Admin Only)
+export const getAllUsers = async () => {
+  const { data, error } = await supabase.from("profiles").select("*").order("created_at", { ascending: false });
+
+  return { data, error };
+};
+
+export const createUser = async (email, password, role, fullName) => {
+  // Note: Creating users via client-side requires admin API key or Supabase Edge Function
+  // For now, we'll use sign up and then update profile
+  const { data, error } = await supabase.auth.signUp({
+    email,
+    password,
+  });
+
+  if (error) return { data: null, error };
+
+  // Update profile with role and name
+  if (data.user) {
+    const { error: profileError } = await supabase
+      .from("profiles")
+      .update({
+        role,
+        full_name: fullName,
+      })
+      .eq("id", data.user.id);
+
+    if (profileError) return { data: null, error: profileError };
+  }
+
+  return { data, error };
+};
+
+export const updateUserProfile = async (userId, updates) => {
+  const { data, error } = await supabase.from("profiles").update(updates).eq("id", userId).select().single();
+
+  return { data, error };
+};
+
+export const deleteUser = async (userId) => {
+  // Note: Deleting auth users requires admin privileges
+  // For now, we'll just mark as inactive in profiles or delete profile
+  const { error } = await supabase.from("profiles").delete().eq("id", userId);
+
+  return { error };
+};
+
 // Access Codes
 export const validateAccessCode = async (code) => {
   const { data, error } = await supabase.from("access_codes").select("*").eq("code", code).eq("is_used", false).single();
