@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { UsersIcon, CalendarIcon, PhoneIcon, UserIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { UsersIcon, CalendarIcon, PhoneIcon, UserIcon, ChevronRightIcon, KeyIcon } from "@heroicons/react/24/outline";
 import { getPendingPatients } from "../../lib/supabase";
 
 const DokterPatients = () => {
@@ -114,6 +114,10 @@ const DokterPatients = () => {
                         <span className="flex items-center gap-1">
                           <PhoneIcon className="h-4 w-4 text-gray-500" />
                           {patient.no_hp}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <KeyIcon className="h-4 w-4 text-gray-500" />
+                          Kode: {patient.access_codes?.code || "-"}
                         </span>
                       </div>
                       <p className="mt-2 inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-gray-300 border border-white/5">{patient.departments?.name}</p>
