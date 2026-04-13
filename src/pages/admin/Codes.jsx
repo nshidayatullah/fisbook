@@ -115,11 +115,16 @@ const Codes = () => {
     }
   };
 
-  const filteredCodes = codes.filter((code) => {
-    if (filter === "unused") return !code.isUsed;
-    if (filter === "used") return code.isUsed;
-    return true;
-  });
+  const filteredCodes = codes
+    .filter((code) => {
+      if (filter === "unused") return !code.isUsed;
+      if (filter === "used") return code.isUsed;
+      return true;
+    })
+    .sort((a, b) => {
+      if (a.isUsed === b.isUsed) return 0;
+      return a.isUsed ? 1 : -1;
+    });
 
   const unusedCount = codes.filter((c) => !c.isUsed).length;
   const usedCount = codes.filter((c) => c.isUsed).length;

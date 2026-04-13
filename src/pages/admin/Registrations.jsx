@@ -1,5 +1,13 @@
 import { useState, useEffect } from "react";
-import { MagnifyingGlassIcon, ClipboardDocumentListIcon, CalendarIcon, PhoneIcon, UserIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { 
+  MagnifyingGlassIcon, 
+  ClipboardDocumentListIcon, 
+  CalendarIcon, 
+  PhoneIcon, 
+  UserIcon, 
+  TrashIcon,
+  KeyIcon 
+} from "@heroicons/react/24/outline";
 import { getRegistrations, deleteRegistration, socket } from "../../lib/api";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
@@ -242,7 +250,19 @@ const Registrations = () => {
 
                   {/* Right: Schedule and Actions */}
                   <div className="flex items-center gap-3">
-                    <div className="flex items-center gap-3 rounded-xl bg-indigo-500/10 px-4 py-3 border border-indigo-500/20 sm:min-w-[180px]">
+                    {/* Access Code Card */}
+                    <div className="flex items-center gap-3 rounded-xl bg-emerald-500/10 px-4 h-[68px] border border-emerald-500/20 sm:min-w-[180px]">
+                      <KeyIcon className="h-5 w-5 text-emerald-400" />
+                      <div>
+                        <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-500/60 leading-none mb-1">Kode Akses</p>
+                        <p className="text-sm font-bold text-emerald-200 tracking-[0.2em] leading-none">
+                          {reg.access_codes?.code || "—"}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Schedule Card */}
+                    <div className="flex items-center gap-3 rounded-xl bg-indigo-500/10 px-4 h-[68px] border border-indigo-500/20 sm:min-w-[180px]">
                       <CalendarIcon className="h-5 w-5 text-indigo-400" />
                       <div>
                         <p className="text-sm font-semibold text-indigo-200">{formatDate(reg.slots?.date)}</p>
