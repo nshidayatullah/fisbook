@@ -10,7 +10,6 @@ import Success from "./pages/Success";
 import UnifiedLogin from "./pages/Login";
 
 // Admin Pages
-import Login from "./pages/admin/Login";
 import AdminLayout from "./pages/admin/AdminLayout";
 import Dashboard from "./pages/admin/Dashboard";
 import Slots from "./pages/admin/Slots";
@@ -23,7 +22,6 @@ import DokterPatientDetail from "./pages/admin/DokterPatientDetail";
 import DokterHistory from "./pages/admin/DokterHistory";
 
 // Fisioterapis Pages
-import FisioterapisLogin from "./pages/fisioterapis/Login";
 import FisioterapisLayout from "./pages/fisioterapis/FisioterapisLayout";
 import FisioterApisDashboard from "./pages/fisioterapis/Dashboard";
 import PatientDetail from "./pages/fisioterapis/PatientDetail";
@@ -42,7 +40,7 @@ function AnimatedRoutes() {
         <Route path="/login" element={<PageTransition><UnifiedLogin /></PageTransition>} />
 
         {/* Admin Routes */}
-        <Route path="/admin/login" element={<PageTransition><Login /></PageTransition>} />
+        <Route path="/admin/login" element={<Navigate to="/login" replace />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
@@ -57,7 +55,7 @@ function AnimatedRoutes() {
         </Route>
 
         {/* Fisioterapis Routes */}
-        <Route path="/fisioterapis/login" element={<PageTransition><FisioterapisLogin /></PageTransition>} />
+        <Route path="/fisioterapis/login" element={<Navigate to="/login" replace />} />
         <Route path="/fisioterapis" element={<FisioterapisLayout />}>
           <Route index element={<Navigate to="/fisioterapis/dashboard" replace />} />
           <Route path="dashboard" element={<FisioterApisDashboard />} />

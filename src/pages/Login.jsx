@@ -40,7 +40,7 @@ const UnifiedLogin = () => {
         // Redirect based on role
         if (profile.role === "fisioterapis") {
           navigate("/fisioterapis/dashboard");
-        } else if (profile.role === "paramedic" || profile.role === "dokter") {
+        } else if (["superadmin", "paramedic", "dokter"].includes(profile.role)) {
           navigate("/admin/dashboard");
         } else {
           setError("Role tidak dikenali. Hubungi administrator.");

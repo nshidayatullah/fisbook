@@ -60,7 +60,7 @@ const AdminLayout = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate("/admin/login");
+    navigate("/login");
   };
 
   if (loading) {
@@ -78,7 +78,7 @@ const AdminLayout = () => {
   }
 
   if (!authUser) {
-    navigate("/admin/login");
+    navigate("/login");
     return null;
   }
 

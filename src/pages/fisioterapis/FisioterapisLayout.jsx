@@ -27,21 +27,21 @@ const FisioterapisLayout = () => {
       const authUser = await getCurrentUser();
 
       if (!authUser) {
-        navigate("/fisioterapis/login");
+        navigate("/login");
         return;
       }
 
       const { data: profile } = await getUserProfile(authUser.id);
 
       if (!profile || profile.role !== "fisioterapis") {
-        navigate("/fisioterapis/login");
+        navigate("/login");
         return;
       }
 
       setUserProfile(profile);
     } catch (error) {
       console.error(error);
-      navigate("/fisioterapis/login");
+      navigate("/login");
     } finally {
       setLoading(false);
     }
@@ -49,7 +49,7 @@ const FisioterapisLayout = () => {
 
   const handleLogout = async () => {
     await signOut();
-    navigate("/fisioterapis/login");
+    navigate("/login");
   };
 
   if (loading) {
