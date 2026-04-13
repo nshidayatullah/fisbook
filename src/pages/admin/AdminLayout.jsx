@@ -215,7 +215,7 @@ const AdminLayout = () => {
                   </div>
                   <span className="hidden lg:flex lg:items-center">
                     <span aria-hidden="true" className="text-sm font-semibold text-white ml-2">
-                      {authUser?.email?.split("@")[0] || "User"}
+                      {userProfile?.fullName || authUser?.email?.split("@")[0] || "User"}
                     </span>
                     <ChevronDownIcon aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400" />
                   </span>
