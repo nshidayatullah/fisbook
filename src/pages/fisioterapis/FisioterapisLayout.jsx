@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
-import { Bars3Icon, XMarkIcon, ArrowRightOnRectangleIcon, ClipboardDocumentListIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon, ArrowRightOnRectangleIcon, ClipboardDocumentListIcon, CheckCircleIcon, UserCircleIcon, ChevronDownIcon } from "@heroicons/react/24/outline";
 import { signOut, getCurrentUser, getUserProfile } from "../../lib/api";
 import AppFooter from "../../components/ui/AppFooter";
 import PageTransition from "../../components/ui/PageTransition";
@@ -112,6 +113,12 @@ const FisioterapisLayout = () => {
                         })}
                       </ul>
                     </li>
+                    <li className="mt-auto">
+                      <button onClick={handleLogout} className="group -mx-2 flex w-full gap-x-3 rounded-lg p-3 text-sm font-semibold leading-6 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-all">
+                        <ArrowRightOnRectangleIcon className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-red-400" />
+                        Keluar
+                      </button>
+                    </li>
                   </ul>
                 </nav>
               </div>
@@ -149,6 +156,12 @@ const FisioterapisLayout = () => {
                   })}
                 </ul>
               </li>
+              <li className="mt-auto">
+                <button onClick={handleLogout} className="group -mx-2 flex w-full gap-x-3 rounded-lg p-3 text-sm font-semibold leading-6 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-all">
+                  <ArrowRightOnRectangleIcon className="h-6 w-6 shrink-0 text-gray-400 group-hover:text-red-400" />
+                  Keluar
+                </button>
+              </li>
             </ul>
           </nav>
         </div>
@@ -158,18 +171,46 @@ const FisioterapisLayout = () => {
         {/* Top header */}
         <div className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-white/5 bg-gray-900/50 backdrop-blur-xl px-4 shadow-sm sm:gap-x-6 lg:px-8">
           <button type="button" onClick={() => setSidebarOpen(true)} className="-m-2.5 p-2.5 text-gray-400 lg:hidden">
+            <span className="sr-only">Open sidebar</span>
             <Bars3Icon className="h-6 w-6" />
           </button>
 
+          {/* Separator mobile */}
+          <div aria-hidden="true" className="h-6 w-px bg-white/10 lg:hidden" />
+
           <div className="flex flex-1 gap-x-4 self-stretch lg:gap-x-6">
             <div className="flex flex-1 items-center">
-              <span className="text-sm font-medium text-gray-400">{userProfile?.full_name || userProfile?.email || "Fisioterapis"}</span>
+              <h1 className="text-lg font-semibold text-white">{navigation.find((item) => item.href === location.pathname)?.name || "Fisioterapis Panel"}</h1>
             </div>
             <div className="flex items-center gap-x-4 lg:gap-x-6">
-              <button onClick={handleLogout} className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-gray-400 hover:bg-white/5 hover:text-white transition-colors">
-                <ArrowRightOnRectangleIcon className="h-5 w-5" />
-                <span className="hidden sm:inline">Logout</span>
-              </button>
+              {/* Profile dropdown */}
+              <Menu as="div" className="relative">
+                <MenuButton className="flex items-center gap-x-2 rounded-lg p-1.5 hover:bg-white/5 transition-colors">
+                  <span className="sr-only">Open user menu</span>
+                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/20 ring-1 ring-white/10">
+                    <UserCircleIcon className="h-5 w-5 text-emerald-400" />
+                  </div>
+                  <span className="hidden lg:flex lg:items-center">
+                    <span aria-hidden="true" className="text-sm font-semibold text-white ml-2">
+                      {userProfile?.fullName || userProfile?.full_name || userProfile?.email?.split("@")[0] || "Fisioterapis"}
+                    </span>
+                    <ChevronDownIcon aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400" />
+                  </span>
+                </MenuButton>
+                <MenuItems
+                  transition
+                  className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-xl bg-gray-800 py-2 shadow-lg ring-1 ring-white/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
+                >
+                  <MenuItem>
+                    <div className="block px-3 py-2 text-sm text-gray-400 border-b border-white/5">{userProfile?.email}</div>
+                  </MenuItem>
+                  <MenuItem>
+                    <button onClick={handleLogout} className="block w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-white/5 hover:text-red-300">
+                      Keluar
+                    </button>
+                  </MenuItem>
+                </MenuItems>
+              </Menu>
             </div>
           </div>
         </div>
