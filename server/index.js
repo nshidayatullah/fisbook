@@ -426,7 +426,40 @@ app.get('/api/registrations/completed', authenticateToken, requireRoles(['supera
 
 app.delete('/api/registrations/:id', authenticateToken, async (req, res) => {
   try {
-    await prisma.registration.delete({ where: { id: req.params.id } });
+    // 1. Fetch registration first to know which code & slot to reset
+    const registration = await prisma.registration.findUnique({
+      where: { id: req.params.id },
+      select: { accessCodeId: true, slotId: true },
+    });
+
+    if (!registration) {
+      return res.status(404).json({ error: 'Pendaftaran tidak ditemukan' });
+    }
+
+    // 2. Delete registration + reset code + free slot atomically
+    const ops = [
+      prisma.registration.delete({ where: { id: req.params.id } }),
+    ];
+
+    if (registration.accessCodeId) {
+      ops.push(
+        prisma.accessCode.update({
+          where: { id: registration.accessCodeId },
+          data: { isUsed: false },
+        })
+      );
+    }
+
+    if (registration.slotId) {
+      ops.push(
+        prisma.slot.update({
+          where: { id: registration.slotId },
+          data: { isBooked: false },
+        })
+      );
+    }
+
+    await prisma.$transaction(ops);
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
