@@ -35,7 +35,7 @@ const Register = () => {
 
     try {
       const parsedCode = JSON.parse(storedCode);
-      if (parsedCode.is_used) {
+      if (parsedCode.isUsed) {
         sessionStorage.removeItem("accessCode");
         navigate("/");
         return;

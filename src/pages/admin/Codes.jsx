@@ -92,13 +92,13 @@ const Codes = () => {
   };
 
   const filteredCodes = codes.filter((code) => {
-    if (filter === "unused") return !code.is_used;
-    if (filter === "used") return code.is_used;
+    if (filter === "unused") return !code.isUsed;
+    if (filter === "used") return code.isUsed;
     return true;
   });
 
-  const unusedCount = codes.filter((c) => !c.is_used).length;
-  const usedCount = codes.filter((c) => c.is_used).length;
+  const unusedCount = codes.filter((c) => !c.isUsed).length;
+  const usedCount = codes.filter((c) => c.isUsed).length;
 
   if (loading) {
     return (
@@ -265,14 +265,14 @@ const Codes = () => {
                     {/* Kode Column */}
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center gap-3">
-                        <span className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold ${code.is_used ? "bg-white/5 text-gray-500" : "bg-indigo-500/20 text-indigo-400"}`}>#</span>
-                        <span className={`font-mono text-lg font-bold tracking-widest ${code.is_used ? "text-gray-500 line-through" : "text-white"}`}>{code.code}</span>
+                        <span className={`flex h-8 w-8 items-center justify-center rounded-lg text-sm font-bold ${code.isUsed ? "bg-white/5 text-gray-500" : "bg-indigo-500/20 text-indigo-400"}`}>#</span>
+                        <span className={`font-mono text-lg font-bold tracking-widest ${code.isUsed ? "text-gray-500 line-through" : "text-white"}`}>{code.code}</span>
                       </div>
                     </td>
 
                     {/* Status Column */}
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {code.is_used ? (
+                      {code.isUsed ? (
                         <span className="inline-flex items-center rounded-full bg-white/5 px-3 py-1 text-xs font-medium text-gray-500">Terpakai</span>
                       ) : (
                         <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-medium text-emerald-400">Tersedia</span>
@@ -281,9 +281,9 @@ const Codes = () => {
 
                     {/* Patient Name Column */}
                     <td className="px-6 py-4">
-                      {code.registrations && code.registrations.length > 0 ? (
+                      {code.registration ? (
                         <div className="text-sm">
-                          <p className="font-semibold text-gray-300">{code.registrations[0].nama_lengkap}</p>
+                          <p className="font-semibold text-gray-300">{code.registration.namaLengkap}</p>
                         </div>
                       ) : (
                         <span className="text-sm text-gray-500">-</span>
@@ -292,13 +292,13 @@ const Codes = () => {
 
                     {/* NIK Column */}
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {code.registrations && code.registrations.length > 0 ? <p className="text-sm text-gray-400 font-mono">{code.registrations[0].nik}</p> : <span className="text-sm text-gray-500">-</span>}
+                      {code.registration ? <p className="text-sm text-gray-400 font-mono">{code.registration.nik}</p> : <span className="text-sm text-gray-500">-</span>}
                     </td>
 
                     {/* Action Column */}
                     <td className="px-6 py-4 whitespace-nowrap text-right">
                       <div className="flex items-center justify-end gap-1">
-                        {!code.is_used && (
+                        {!code.isUsed && (
                           <>
                             <button onClick={() => copyToClipboard(code.code, code.id)} className="rounded-lg p-2 text-gray-400 hover:bg-white/10 hover:text-white transition-colors" title="Salin">
                               {copiedId === code.id ? <CheckIcon className="h-5 w-5 text-emerald-400" /> : <ClipboardIcon className="h-5 w-5" />}
