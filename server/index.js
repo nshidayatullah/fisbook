@@ -3,6 +3,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
 const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const dotenv = require('dotenv');
 const { PrismaClient } = require('@prisma/client');
 const jwt = require('jsonwebtoken');
@@ -44,6 +45,23 @@ const io = new Server(server, {
     origin: allowedOrigins,
     credentials: true
   }
+});
+
+// --- RATE LIMITERS ---
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // Limit each IP to 10 login requests per window
+  message: { error: 'Terlalu banyak percobaan login, silakan coba lagi setelah 15 menit' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+const codeValidateLimiter = rateLimit({
+  windowMs: 5 * 60 * 1000, // 5 minutes
+  max: 20, // Limit each IP to 20 code validation attempts per window
+  message: { error: 'Terlalu banyak percobaan kode akses, silakan coba lagi setelah 5 menit' },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 const prisma = new PrismaClient();
@@ -89,19 +107,19 @@ const requireRoles = (roles) => (req, res, next) => {
 };
 
 // --- AUTH ROUTES ---
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/auth/login', loginLimiter, async (req, res) => {
   const { email, password } = req.body;
   try {
     const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) return res.status(400).json({ error: 'User not found' });
+    if (!user) return res.status(400).json({ error: 'Email atau password salah' });
 
     const validPassword = await bcrypt.compare(password, user.password);
-    if (!validPassword) return res.status(400).json({ error: 'Invalid password' });
+    if (!validPassword) return res.status(400).json({ error: 'Email atau password salah' });
 
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ token, user: { id: user.id, email: user.email, role: user.role, fullName: user.fullName } });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
 
@@ -113,7 +131,7 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
     });
     res.json(user);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
 
@@ -131,22 +149,22 @@ app.get('/api/users', authenticateToken, requireSuperadmin, async (req, res) => 
     });
     res.json(safeUsers);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal mengambil daftar pengguna' });
   }
 });
 
 app.post('/api/users', authenticateToken, requireSuperadmin, async (req, res) => {
-  const { email, password, role, fullName } = req.body;
+  const { email, password, role, fullName, sipNumber } = req.body;
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await prisma.user.create({
-      data: { email, password: hashedPassword, role, fullName }
+      data: { email, password: hashedPassword, role, fullName, sipNumber }
     });
     const safeUser = { ...user };
     delete safeUser.password;
     res.json(safeUser);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal membuat pengguna baru' });
   }
 });
 
@@ -197,7 +215,7 @@ app.get('/api/slots', async (req, res) => {
     });
     res.json(slots);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal mengambil jadwal tersedia' });
   }
 });
 
@@ -214,7 +232,7 @@ app.post('/api/slots/generate', authenticateToken, requireRoles(['superadmin', '
     io.emit('slots_updated');
     res.json(slots);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal membuat jadwal' });
   }
 });
 
@@ -227,7 +245,7 @@ app.patch('/api/slots/:id/book', async (req, res) => {
     io.emit('slots_updated');
     res.json(slot);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal memesan jadwal' });
   }
 });
 
@@ -240,20 +258,20 @@ app.get('/api/access-codes', authenticateToken, requireRoles(['superadmin', 'par
     });
     res.json(codes);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal mengambil daftar kode' });
   }
 });
 
-app.post('/api/access-codes/validate', async (req, res) => {
+app.post('/api/access-codes/validate', codeValidateLimiter, async (req, res) => {
   const { code } = req.body;
   try {
     const accessCode = await prisma.accessCode.findFirst({
       where: { code, isUsed: false }
     });
-    if (!accessCode) return res.status(404).json({ error: 'Invalid or used code' });
+    if (!accessCode) return res.status(404).json({ error: 'Kode tidak valid atau sudah digunakan' });
     res.json(accessCode);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
 
@@ -281,7 +299,7 @@ app.post('/api/access-codes/generate', authenticateToken, requireRoles(['superad
     await prisma.accessCode.createMany({ data: newCodes });
     res.json({ success: true, count: newCodes.length });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal membuat kode akses' });
   }
 });
 
@@ -310,7 +328,7 @@ app.delete('/api/access-codes/:id', authenticateToken, requireRoles(['superadmin
     await prisma.accessCode.delete({ where: { id: codeId } });
     res.json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal menghapus kode akses' });
   }
 });
 
@@ -320,7 +338,7 @@ app.delete('/api/slots/:id', authenticateToken, requireRoles(['superadmin', 'par
     io.emit('slots_updated');
     res.json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal menghapus jadwal' });
   }
 });
 
@@ -333,28 +351,32 @@ app.get('/api/departments', async (req, res) => {
     });
     res.json(depts);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal mengambil daftar departemen' });
   }
 });
 
 app.post('/api/departments', authenticateToken, requireSuperadmin, async (req, res) => {
+  const { name, isActive } = req.body;
   try {
-    const dept = await prisma.department.create({ data: req.body });
+    const dept = await prisma.department.create({ 
+      data: { name, isActive } 
+    });
     res.json(dept);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal membuat departemen' });
   }
 });
 
 app.patch('/api/departments/:id', authenticateToken, requireSuperadmin, async (req, res) => {
+  const { name, isActive } = req.body;
   try {
     const dept = await prisma.department.update({
       where: { id: req.params.id },
-      data: req.body
+      data: { name, isActive }
     });
     res.json(dept);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal memperbarui departemen' });
   }
 });
 
@@ -363,7 +385,7 @@ app.delete('/api/departments/:id', authenticateToken, requireSuperadmin, async (
     await prisma.department.delete({ where: { id: req.params.id } });
     res.json({ success: true });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal menghapus departemen' });
   }
 });
 
@@ -376,7 +398,7 @@ app.get('/api/registrations', authenticateToken, async (req, res) => {
     });
     res.json(regs);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
 
@@ -389,20 +411,67 @@ app.get('/api/registrations/pending', authenticateToken, requireRoles(['superadm
     });
     res.json(regs);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
 
 app.post('/api/registrations', async (req, res) => {
+  const { namaLengkap, nik, noHp, keluhan, slotId, departmentId, accessCodeId } = req.body;
+  
   try {
-    const reg = await prisma.registration.create({
-      data: req.body,
-      include: { slot: true, department: true, accessCode: true }
+    // Perform database operations in a transaction to ensure atomicity
+    const reg = await prisma.$transaction(async (tx) => {
+      // 1. Validate Access Code
+      const code = await tx.accessCode.findUnique({
+        where: { id: accessCodeId }
+      });
+      if (!code || code.isUsed) throw new Error('KODE_INVALID');
+
+      // 2. Validate Slot
+      const slot = await tx.slot.findUnique({
+        where: { id: slotId }
+      });
+      if (!slot || slot.isBooked) throw new Error('SLOT_INVALID');
+
+      // 3. Create Registration
+      const newReg = await tx.registration.create({
+        data: {
+          namaLengkap,
+          nik,
+          noHp,
+          keluhan,
+          slotId,
+          departmentId,
+          accessCodeId
+        },
+        include: { slot: true, department: true, accessCode: true }
+      });
+
+      // 4. Update Statuses
+      await tx.accessCode.update({
+        where: { id: accessCodeId },
+        data: { isUsed: true }
+      });
+
+      await tx.slot.update({
+        where: { id: slotId },
+        data: { isBooked: true }
+      });
+
+      return newReg;
     });
+
     io.emit('registration_created', reg);
+    io.emit('slots_updated'); // Notify all clients that a slot was taken
     res.json(reg);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    if (error.message === 'KODE_INVALID') {
+      return res.status(400).json({ error: 'Kode akses tidak valid atau sudah digunakan' });
+    }
+    if (error.message === 'SLOT_INVALID') {
+      return res.status(400).json({ error: 'Jadwal yang dipilih sudah penuh atau tidak tersedia' });
+    }
+    res.status(500).json({ error: 'Terjadi kesalahan saat memproses pendaftaran' });
   }
 });
 
@@ -415,7 +484,7 @@ app.get('/api/registrations/completed', authenticateToken, requireRoles(['supera
     });
     res.json(regs);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
 
@@ -425,19 +494,23 @@ app.get('/api/registrations/:id', authenticateToken, requireRoles(['superadmin',
       where: { id: req.params.id },
       include: { slot: true, department: true, accessCode: true }
     });
-    if (!reg) return res.status(404).json({ error: 'Registration not found' });
+    if (!reg) return res.status(404).json({ error: 'Data pendaftaran tidak ditemukan' });
     res.json(reg);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
 
 app.patch('/api/registrations/:id/medical-record', authenticateToken, requireRoles(['superadmin', 'dokter', 'fisioterapis']), async (req, res) => {
+  const { anamnesa, pemeriksaanFisik, tindakanDilakukan, rencanaTindakan } = req.body;
   try {
     const reg = await prisma.registration.update({
       where: { id: req.params.id },
       data: {
-        ...req.body,
+        anamnesa,
+        pemeriksaanFisik,
+        tindakanDilakukan,
+        rencanaTindakan,
         statusKunjungan: 'selesai',
         tanggalKunjungan: new Date()
       }
@@ -445,7 +518,7 @@ app.patch('/api/registrations/:id/medical-record', authenticateToken, requireRol
     io.emit('registration_updated', reg);
     res.json(reg);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: 'Gagal memperbarui rekam medis' });
   }
 });
 
