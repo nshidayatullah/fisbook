@@ -123,7 +123,8 @@ app.get('/api/users', authenticateToken, requireSuperadmin, async (req, res) => 
     });
     // Remove passwords before sending
     const safeUsers = users.map(u => {
-      const { password, ...safe } = u;
+      const safe = { ...u };
+      delete safe.password;
       return safe;
     });
     res.json(safeUsers);
@@ -139,7 +140,8 @@ app.post('/api/users', authenticateToken, requireSuperadmin, async (req, res) =>
     const user = await prisma.user.create({
       data: { email, password: hashedPassword, role, fullName }
     });
-    const { password: _, ...safeUser } = user;
+    const safeUser = { ...user };
+    delete safeUser.password;
     res.json(safeUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -152,7 +154,8 @@ app.patch('/api/users/:id', authenticateToken, requireSuperadmin, async (req, re
       where: { id: req.params.id },
       data: req.body
     });
-    const { password, ...safeUser } = user;
+    const safeUser = { ...user };
+    delete safeUser.password;
     res.json(safeUser);
   } catch (error) {
     res.status(500).json({ error: error.message });
