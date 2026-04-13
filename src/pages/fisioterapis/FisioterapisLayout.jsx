@@ -3,6 +3,7 @@ import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { Bars3Icon, XMarkIcon, ArrowRightOnRectangleIcon, ClipboardDocumentListIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import { signOut, getCurrentUser, getUserProfile } from "../../lib/api";
 import AppFooter from "../../components/ui/AppFooter";
+import PageTransition from "../../components/ui/PageTransition";
 
 const navigation = [
   { name: "Antrian Pasien", href: "/fisioterapis/dashboard", icon: ClipboardDocumentListIcon },
@@ -176,7 +177,9 @@ const FisioterapisLayout = () => {
         {/* Page content */}
         <main className="py-8">
           <div className="px-4 sm:px-6 lg:px-8">
-            <Outlet />
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </div>
         </main>
         <AppFooter />

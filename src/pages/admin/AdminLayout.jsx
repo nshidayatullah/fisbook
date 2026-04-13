@@ -5,6 +5,7 @@ import { Bars3Icon, XMarkIcon, HomeIcon, CalendarDaysIcon, KeyIcon, ClipboardDoc
 import { useAuth } from "../../hooks/useAuth";
 import { signOut, getUserProfile } from "../../lib/api";
 import AppFooter from "../../components/ui/AppFooter";
+import PageTransition from "../../components/ui/PageTransition";
 
 const allNavigation = [
   { name: "Dashboard", href: "/admin/dashboard", icon: HomeIcon },
@@ -241,7 +242,9 @@ const AdminLayout = () => {
         {/* Page content */}
         <main className="py-8">
           <div className="px-4 sm:px-6 lg:px-8">
-            <Outlet />
+            <PageTransition>
+              <Outlet />
+            </PageTransition>
           </div>
         </main>
         <AppFooter />
