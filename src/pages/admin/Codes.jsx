@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { KeyIcon, ClipboardIcon, TrashIcon, CheckIcon, FunnelIcon } from "@heroicons/react/24/outline";
-import { getAccessCodes, generateAccessCodes, deleteAccessCode } from "../../lib/api";
+import { KeyIcon, ClipboardIcon, TrashIcon, CheckIcon, FunnelIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
+import { getAccessCodes, generateAccessCodes, deleteAccessCode, getWhatsAppMessageByName } from "../../lib/api";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
 import { SkeletonTableRow } from "../../components/ui/Skeleton";
@@ -14,6 +14,7 @@ const Codes = () => {
   const [filter, setFilter] = useState("all"); // all, unused, used
   const [generateCount, setGenerateCount] = useState(5);
   const [copiedId, setCopiedId] = useState(null);
+  const [waCopiedId, setWaCopiedId] = useState(null);
 
   // Delete modal state
   const [deleteModal, setDeleteModal] = useState({ open: false, codeId: null });
@@ -90,6 +91,25 @@ const Codes = () => {
       setTimeout(() => setCopiedId(null), 2000);
     } catch {
       setError("Gagal menyalin kode");
+    }
+  };
+
+  const copyWhatsAppMessage = async (code, id) => {
+    try {
+      // Fetch dynamic template from DB
+      const { data, error: fetchError } = await getWhatsAppMessageByName("pendaftaran");
+      if (fetchError) throw fetchError;
+
+      const template = data?.content || "";
+      // Replace [CODE] placeholder with the actual code
+      const message = template.replace("[CODE]", code);
+
+      await navigator.clipboard.writeText(message);
+      setWaCopiedId(id);
+      setTimeout(() => setWaCopiedId(null), 2000);
+    } catch (err) {
+      console.error(err);
+      setError("Gagal menyalin pesan WhatsApp");
     }
   };
 
@@ -286,8 +306,11 @@ const Codes = () => {
                           <div className="flex items-center justify-end gap-1">
                             {!code.isUsed && (
                               <>
-                                <button onClick={() => copyToClipboard(code.code, code.id)} className="rounded-lg p-2 text-gray-400 hover:bg-white/10 hover:text-white transition-colors" title="Salin">
+                                <button onClick={() => copyToClipboard(code.code, code.id)} className="rounded-lg p-2 text-gray-400 hover:bg-white/10 hover:text-white transition-colors" title="Salin Kode Only">
                                   {copiedId === code.id ? <CheckIcon className="h-5 w-5 text-emerald-400" /> : <ClipboardIcon className="h-5 w-5" />}
+                                </button>
+                                <button onClick={() => copyWhatsAppMessage(code.code, code.id)} className="rounded-lg p-2 text-gray-400 hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors" title="Salin Pesan WhatsApp">
+                                  {waCopiedId === code.id ? <CheckIcon className="h-5 w-5 text-emerald-400" /> : <ChatBubbleLeftRightIcon className="h-5 w-5" />}
                                 </button>
                                 <button onClick={() => openDeleteModal(code.id)} className="rounded-lg p-2 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors" title="Hapus">
                                   <TrashIcon className="h-5 w-5" />

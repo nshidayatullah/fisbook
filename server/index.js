@@ -471,6 +471,42 @@ app.delete('/api/registrations/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// --- WHATSAPP MESSAGES ROUTES ---
+app.get('/api/whatsapp-messages', authenticateToken, async (req, res) => {
+  try {
+    const messages = await prisma.whatsAppMessage.findMany({
+      orderBy: { name: 'asc' }
+    });
+    res.json(messages);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/whatsapp-messages/:name', authenticateToken, async (req, res) => {
+  try {
+    const message = await prisma.whatsAppMessage.findUnique({
+      where: { name: req.params.name }
+    });
+    if (!message) return res.status(404).json({ error: 'Message mapping not found' });
+    res.json(message);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.patch('/api/whatsapp-messages/:id', authenticateToken, requireRoles(['superadmin']), async (req, res) => {
+  try {
+    const message = await prisma.whatsAppMessage.update({
+      where: { id: req.params.id },
+      data: req.body
+    });
+    res.json(message);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get('/api/dashboard/stats', authenticateToken, async (req, res) => {
   try {
     const [registrations, slots, codes, departments] = await Promise.all([

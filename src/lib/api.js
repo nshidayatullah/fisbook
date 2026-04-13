@@ -361,4 +361,32 @@ export const deleteRegistration = async (id) => {
   }
 };
 
+// WhatsApp Messages
+export const getWhatsAppMessages = async () => {
+  try {
+    const { data } = await api.get('/api/whatsapp-messages');
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error.response?.data || error };
+  }
+};
+
+export const getWhatsAppMessageByName = async (name) => {
+  try {
+    const { data } = await api.get(`/api/whatsapp-messages/${name}`);
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error.response?.data || error };
+  }
+};
+
+export const updateWhatsAppMessage = async (id, content) => {
+  try {
+    const { data } = await api.patch(`/api/whatsapp-messages/${id}`, { content });
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error.response?.data || error };
+  }
+};
+
 export default api;

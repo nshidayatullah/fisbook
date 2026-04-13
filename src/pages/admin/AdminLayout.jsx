@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Dialog, DialogBackdrop, DialogPanel, TransitionChild, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
-import { Bars3Icon, XMarkIcon, HomeIcon, CalendarDaysIcon, KeyIcon, ClipboardDocumentListIcon, BuildingOfficeIcon, ArrowRightOnRectangleIcon, ChevronDownIcon, UserCircleIcon, UsersIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon, HomeIcon, CalendarDaysIcon, KeyIcon, ClipboardDocumentListIcon, BuildingOfficeIcon, ArrowRightOnRectangleIcon, ChevronDownIcon, UserCircleIcon, UsersIcon, ClockIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../../hooks/useAuth";
 import { signOut, getUserProfile } from "../../lib/api";
 import AppFooter from "../../components/ui/AppFooter";
@@ -13,6 +13,7 @@ const allNavigation = [
   { name: "Kode Akses", href: "/admin/codes", icon: KeyIcon },
   { name: "Pendaftaran", href: "/admin/registrations", icon: ClipboardDocumentListIcon },
   { name: "Departemen", href: "/admin/departments", icon: BuildingOfficeIcon },
+  { name: "Pesan WhatsApp", href: "/admin/whatsapp-messages", icon: ChatBubbleLeftRightIcon },
   { name: "Antrian Pasien", href: "/admin/patients", icon: UsersIcon, dokterOnly: true },
   { name: "Riwayat Pelayanan", href: "/admin/history", icon: ClockIcon, dokterOnly: true },
   { name: "Manajemen User", href: "/admin/users", icon: UserCircleIcon, superadminOnly: true },

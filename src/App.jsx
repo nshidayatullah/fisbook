@@ -17,6 +17,7 @@ import Codes from "./pages/admin/Codes";
 import Registrations from "./pages/admin/Registrations";
 import Departments from "./pages/admin/Departments";
 import Users from "./pages/admin/Users";
+import WhatsAppMessages from "./pages/admin/WhatsAppMessages";
 import DokterPatients from "./pages/admin/DokterPatients";
 import DokterPatientDetail from "./pages/admin/DokterPatientDetail";
 import DokterHistory from "./pages/admin/DokterHistory";
@@ -49,6 +50,7 @@ function AnimatedRoutes() {
           <Route path="registrations" element={<Registrations />} />
           <Route path="departments" element={<Departments />} />
           <Route path="users" element={<Users />} />
+          <Route path="whatsapp-messages" element={<WhatsAppMessages />} />
           <Route path="patients" element={<DokterPatients />} />
           <Route path="patient/:id" element={<DokterPatientDetail />} />
           <Route path="history" element={<DokterHistory />} />
