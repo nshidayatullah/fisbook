@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const helmet = require('helmet');
 const dotenv = require('dotenv');
 const { PrismaClient } = require('@prisma/client');
 const jwt = require('jsonwebtoken');
@@ -12,17 +13,46 @@ dotenv.config();
 
 const app = express();
 const server = http.createServer(app);
+
+// --- SECURITY MIDDLEWARES ---
+app.use(helmet({
+  contentSecurityPolicy: false, // Disable for easier Socket.io/Client integration or customize if needed
+  crossOriginEmbedderPolicy: false
+}));
+
+const allowedOrigins = [
+  'https://fisioterapi.klinikppabib.com',
+  'http://localhost:5173',
+  'http://localhost:3000'
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
 const io = new Server(server, {
   cors: {
-    origin: '*',
+    origin: allowedOrigins,
+    credentials: true
   }
 });
 
 const prisma = new PrismaClient();
 const PORT = process.env.PORT || 3000;
-const JWT_SECRET = process.env.JWT_SECRET || 'secret';
+const JWT_SECRET = process.env.JWT_SECRET;
 
-app.use(cors());
+if (!JWT_SECRET) {
+  console.error('FATAL: JWT_SECRET is not defined in environment variables');
+  process.exit(1);
+}
+
 app.use(express.json());
 
 // Serve static files from React build
@@ -49,6 +79,13 @@ const requireSuperadmin = (req, res, next) => {
   next();
 };
 
+const requireRoles = (roles) => (req, res, next) => {
+  if (!roles.includes(req.user.role)) {
+    return res.status(403).json({ error: `Required roles: ${roles.join(', ')}` });
+  }
+  next();
+};
+
 // --- AUTH ROUTES ---
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
@@ -59,7 +96,7 @@ app.post('/api/auth/login', async (req, res) => {
     const validPassword = await bcrypt.compare(password, user.password);
     if (!validPassword) return res.status(400).json({ error: 'Invalid password' });
 
-    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET);
+    const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ token, user: { id: user.id, email: user.email, role: user.role, fullName: user.fullName } });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -68,7 +105,10 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.get('/api/auth/me', authenticateToken, async (req, res) => {
   try {
-    const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+    const user = await prisma.user.findUnique({ 
+      where: { id: req.user.id },
+      select: { id: true, email: true, role: true, fullName: true, createdAt: true }
+    });
     res.json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -156,7 +196,7 @@ app.get('/api/slots', async (req, res) => {
   }
 });
 
-app.post('/api/slots/generate', authenticateToken, async (req, res) => {
+app.post('/api/slots/generate', authenticateToken, requireSuperadmin, async (req, res) => {
   const { date, hours } = req.body;
   try {
     const slots = await Promise.all(hours.map(hour => 
@@ -187,7 +227,7 @@ app.patch('/api/slots/:id/book', async (req, res) => {
 });
 
 // --- ACCESS CODES ROUTES ---
-app.get('/api/access-codes', authenticateToken, async (req, res) => {
+app.get('/api/access-codes', authenticateToken, requireSuperadmin, async (req, res) => {
   try {
     const codes = await prisma.accessCode.findMany({
       include: { registration: true },
@@ -224,7 +264,7 @@ app.patch('/api/access-codes/:id/use', async (req, res) => {
   }
 });
 
-app.post('/api/access-codes/generate', authenticateToken, async (req, res) => {
+app.post('/api/access-codes/generate', authenticateToken, requireSuperadmin, async (req, res) => {
   const { count = 10 } = req.body;
   try {
     const newCodes = [];
@@ -240,7 +280,7 @@ app.post('/api/access-codes/generate', authenticateToken, async (req, res) => {
   }
 });
 
-app.delete('/api/access-codes/:id', authenticateToken, async (req, res) => {
+app.delete('/api/access-codes/:id', authenticateToken, requireSuperadmin, async (req, res) => {
   try {
     await prisma.accessCode.delete({ where: { id: req.params.id } });
     res.json({ success: true });
@@ -249,7 +289,7 @@ app.delete('/api/access-codes/:id', authenticateToken, async (req, res) => {
   }
 });
 
-app.delete('/api/slots/:id', authenticateToken, async (req, res) => {
+app.delete('/api/slots/:id', authenticateToken, requireSuperadmin, async (req, res) => {
   try {
     await prisma.slot.delete({ where: { id: req.params.id } });
     io.emit('slots_updated');
@@ -272,7 +312,7 @@ app.get('/api/departments', async (req, res) => {
   }
 });
 
-app.post('/api/departments', authenticateToken, async (req, res) => {
+app.post('/api/departments', authenticateToken, requireSuperadmin, async (req, res) => {
   try {
     const dept = await prisma.department.create({ data: req.body });
     res.json(dept);
@@ -281,7 +321,7 @@ app.post('/api/departments', authenticateToken, async (req, res) => {
   }
 });
 
-app.patch('/api/departments/:id', authenticateToken, async (req, res) => {
+app.patch('/api/departments/:id', authenticateToken, requireSuperadmin, async (req, res) => {
   try {
     const dept = await prisma.department.update({
       where: { id: req.params.id },
@@ -293,7 +333,7 @@ app.patch('/api/departments/:id', authenticateToken, async (req, res) => {
   }
 });
 
-app.delete('/api/departments/:id', authenticateToken, async (req, res) => {
+app.delete('/api/departments/:id', authenticateToken, requireSuperadmin, async (req, res) => {
   try {
     await prisma.department.delete({ where: { id: req.params.id } });
     res.json({ success: true });
@@ -315,7 +355,7 @@ app.get('/api/registrations', authenticateToken, async (req, res) => {
   }
 });
 
-app.get('/api/registrations/pending', authenticateToken, async (req, res) => {
+app.get('/api/registrations/pending', authenticateToken, requireRoles(['superadmin', 'dokter', 'paramedic', 'fisioterapis']), async (req, res) => {
   try {
     const regs = await prisma.registration.findMany({
       where: { statusKunjungan: 'pending' },
@@ -341,19 +381,20 @@ app.post('/api/registrations', async (req, res) => {
   }
 });
 
-app.get('/api/registrations/:id', async (req, res) => {
+app.get('/api/registrations/:id', authenticateToken, requireRoles(['superadmin', 'dokter', 'paramedic', 'fisioterapis']), async (req, res) => {
   try {
     const reg = await prisma.registration.findUnique({
       where: { id: req.params.id },
       include: { slot: true, department: true, accessCode: true }
     });
+    if (!reg) return res.status(404).json({ error: 'Registration not found' });
     res.json(reg);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
 
-app.patch('/api/registrations/:id/medical-record', authenticateToken, async (req, res) => {
+app.patch('/api/registrations/:id/medical-record', authenticateToken, requireRoles(['superadmin', 'dokter', 'fisioterapis']), async (req, res) => {
   try {
     const reg = await prisma.registration.update({
       where: { id: req.params.id },
@@ -370,7 +411,7 @@ app.patch('/api/registrations/:id/medical-record', authenticateToken, async (req
   }
 });
 
-app.get('/api/registrations/completed', authenticateToken, async (req, res) => {
+app.get('/api/registrations/completed', authenticateToken, requireRoles(['superadmin', 'dokter', 'fisioterapis']), async (req, res) => {
   try {
     const regs = await prisma.registration.findMany({
       where: { statusKunjungan: 'selesai' },
