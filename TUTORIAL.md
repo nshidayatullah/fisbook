@@ -220,15 +220,6 @@ Sistem Booking Fisioterapi Karyawan
 
 ---
 
-## 📞 Kontak
-
-Jika ada kendala, hubungi:
-
-- **Admin**: [email/kontak admin]
-- **IT Support**: [email/kontak IT]
-
----
-
 ## 🔐 Keamanan
 
 - **Jangan bagikan** password Anda

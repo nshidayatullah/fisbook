@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { validateAccessCode } from "../lib/supabase";
+import { validateAccessCode } from "../lib/api";
 import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import Footer from "../components/ui/Footer";
 
@@ -156,12 +156,12 @@ const Home = () => {
         {/* Footer */}
         <div className="mt-8 text-center text-xs text-gray-500 sm:mt-0">
           <p>&copy; 2026 PhysioBook. All rights reserved.</p>
-          <div className="mt-2 flex items-center justify-center gap-3 text-center">
-            <a href="/admin/login" className="text-gray-600 hover:text-white transition-colors">
+          <div className="mt-4 flex items-center justify-center gap-4 text-center text-sm font-medium">
+            <a href="/admin/login" className="text-gray-400 hover:text-indigo-400 transition-colors">
               Login Admin
             </a>
-            <span className="text-gray-700">·</span>
-            <a href="/fisioterapis/login" className="text-gray-600 hover:text-white transition-colors">
+            <span className="text-gray-600">|</span>
+            <a href="/fisioterapis/login" className="text-gray-400 hover:text-emerald-400 transition-colors">
               Login Fisioterapis
             </a>
           </div>

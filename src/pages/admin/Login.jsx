@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signIn, getUserProfile } from "../../lib/supabase";
+import { signIn, getUserProfile } from "../../lib/api";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,9 +24,9 @@ const Login = () => {
         return;
       }
 
-      if (data?.user) {
+      if (data) {
         // Check user role - only allow admin and dokter
-        const { data: profile, error: profileError } = await getUserProfile(data.user.id);
+        const { data: profile, error: profileError } = await getUserProfile(data.id);
 
         if (profileError || !profile) {
           setError("Gagal memuat profil pengguna");
@@ -34,8 +34,8 @@ const Login = () => {
           return;
         }
 
-        // Allow admin and dokter, block fisioterapis
-        if (profile.role !== "admin" && profile.role !== "dokter") {
+        // Allow superadmin, paramedic and dokter, block fisioterapis
+        if (profile.role !== "superadmin" && profile.role !== "paramedic" && profile.role !== "dokter") {
           setError("Akses ditolak. Gunakan portal Fisioterapis untuk login.");
           setLoading(false);
           return;

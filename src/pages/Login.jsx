@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signIn, getUserProfile } from "../lib/supabase";
+import { signIn, getUserProfile } from "../lib/api";
 
 const UnifiedLogin = () => {
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const UnifiedLogin = () => {
         // Redirect based on role
         if (profile.role === "fisioterapis") {
           navigate("/fisioterapis/dashboard");
-        } else if (profile.role === "admin" || profile.role === "dokter") {
+        } else if (profile.role === "paramedic" || profile.role === "dokter") {
           navigate("/admin/dashboard");
         } else {
           setError("Role tidak dikenali. Hubungi administrator.");
@@ -130,7 +130,7 @@ const UnifiedLogin = () => {
             {/* Info */}
             <div className="mt-6 text-center text-sm text-gray-400">
               <p>Sistem akan mengarahkan Anda ke dashboard yang sesuai</p>
-              <p className="mt-1 text-xs">berdasarkan role: Admin, Dokter, atau Fisioterapis</p>
+              <p className="mt-1 text-xs">berdasarkan role: Paramedic, Dokter, atau Fisioterapis</p>
             </div>
           </div>
 

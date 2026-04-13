@@ -1,0 +1,83 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  role      String   @default("paramedic") // paramedic, fisioterapis, dokter
+  fullName  String?
+  sipNumber String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  registrations Registration[] @relation("FisioterapisToRegistration")
+}
+
+model AccessCode {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  isUsed    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  registration Registration?
+}
+
+model Slot {
+  id        String   @id @default(uuid())
+  date      String
+  hour      Int
+  isBooked  Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  registration Registration?
+
+  @@unique([date, hour])
+}
+
+model Department {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  registrations Registration[]
+}
+
+model Registration {
+  id                String   @id @default(uuid())
+  namaLengkap       String
+  nik               String
+  noHp              String
+  keluhan           String
+  
+  // Medical Records (filled by fisioterapis)
+  anamnesa          String?
+  pemeriksaanFisik  String?
+  tindakanDilakukan String?
+  rencanaTindakan   String?
+  statusKunjungan   String   @default("pending") // pending, selesai
+  tanggalKunjungan  DateTime?
+
+  // Relations
+  slotId            String?  @unique
+  slot              Slot?    @relation(fields: [slotId], references: [id])
+  
+  departmentId      String?
+  department        Department? @relation(fields: [departmentId], references: [id])
+  
+  accessCodeId      String?  @unique
+  accessCode        AccessCode? @relation(fields: [accessCodeId], references: [id])
+  
+  fisioterapisId    String?
+  fisioterapis      User?    @relation("FisioterapisToRegistration", fields: [fisioterapisId], references: [id])
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeftIcon, CheckIcon } from "@heroicons/react/24/outline";
-import { getPatientDetail, updateMedicalRecord, getCurrentUser } from "../../lib/supabase";
+import { getPatientDetail, updateMedicalRecord, getCurrentUser } from "../../lib/api";
 
 const PatientDetail = () => {
   const { id } = useParams();
@@ -61,11 +61,11 @@ const PatientDetail = () => {
     setSuccess("");
 
     try {
-      const user = await getCurrentUser();
+      const authUser = await getCurrentUser();
 
       const medicalData = {
         ...formData,
-        fisioterapis_id: user.id,
+        fisioterapis_id: authUser.id,
         tanggal_kunjungan: new Date().toISOString(),
       };
 

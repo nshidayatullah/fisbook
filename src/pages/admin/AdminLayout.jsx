@@ -3,7 +3,7 @@ import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Dialog, DialogBackdrop, DialogPanel, TransitionChild, Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon, HomeIcon, CalendarDaysIcon, KeyIcon, ClipboardDocumentListIcon, BuildingOfficeIcon, ArrowRightOnRectangleIcon, ChevronDownIcon, UserCircleIcon, UsersIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { useAuth } from "../../hooks/useAuth";
-import { signOut, getUserProfile } from "../../lib/supabase";
+import { signOut, getUserProfile } from "../../lib/api";
 import AppFooter from "../../components/ui/AppFooter";
 
 const allNavigation = [
@@ -14,7 +14,7 @@ const allNavigation = [
   { name: "Departemen", href: "/admin/departments", icon: BuildingOfficeIcon },
   { name: "Antrian Pasien", href: "/admin/patients", icon: UsersIcon, dokterOnly: true },
   { name: "Riwayat Pelayanan", href: "/admin/history", icon: ClockIcon, dokterOnly: true },
-  { name: "Manajemen User", href: "/admin/users", icon: UserCircleIcon, adminOnly: true },
+  { name: "Manajemen User", href: "/admin/users", icon: UserCircleIcon, superadminOnly: true },
 ];
 
 function classNames(...classes) {
@@ -24,15 +24,15 @@ function classNames(...classes) {
 const AdminLayout = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, loading } = useAuth();
+  const { user: authUser, loading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
 
   const loadUserProfile = async () => {
-    if (!user) return;
+    if (!authUser) return;
 
     try {
-      const { data } = await getUserProfile(user.id);
+      const { data } = await getUserProfile(authUser.id);
       setUserProfile(data);
     } catch (error) {
       console.error("Failed to load profile:", error);
@@ -42,12 +42,12 @@ const AdminLayout = () => {
   useEffect(() => {
     loadUserProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [authUser]);
 
   // Filter navigation based on role
   const navigation = allNavigation.filter((item) => {
-    // Hide Users menu for dokter
-    if (item.adminOnly && userProfile?.role === "dokter") {
+    // Hide Users menu for non-superadmin
+    if (item.superadminOnly && userProfile?.role !== "superadmin") {
       return false;
     }
     // Show patient/history menus ONLY for dokter
@@ -76,7 +76,7 @@ const AdminLayout = () => {
     );
   }
 
-  if (!user) {
+  if (!authUser) {
     navigate("/admin/login");
     return null;
   }
@@ -215,7 +215,7 @@ const AdminLayout = () => {
                   </div>
                   <span className="hidden lg:flex lg:items-center">
                     <span aria-hidden="true" className="text-sm font-semibold text-white ml-2">
-                      {user?.email?.split("@")[0] || "Admin"}
+                      {authUser?.email?.split("@")[0] || "User"}
                     </span>
                     <ChevronDownIcon aria-hidden="true" className="ml-2 h-5 w-5 text-gray-400" />
                   </span>
@@ -225,7 +225,7 @@ const AdminLayout = () => {
                   className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-xl bg-gray-800 py-2 shadow-lg ring-1 ring-white/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[enter]:ease-out data-[leave]:duration-75 data-[leave]:ease-in"
                 >
                   <MenuItem>
-                    <div className="block px-3 py-2 text-sm text-gray-400 border-b border-white/5">{user?.email}</div>
+                    <div className="block px-3 py-2 text-sm text-gray-400 border-b border-white/5">{authUser?.email}</div>
                   </MenuItem>
                   <MenuItem>
                     <button onClick={handleSignOut} className="block w-full px-3 py-2 text-left text-sm text-red-400 hover:bg-white/5 hover:text-red-300">

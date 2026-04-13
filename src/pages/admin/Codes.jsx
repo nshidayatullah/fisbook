@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { KeyIcon, ClipboardIcon, TrashIcon, CheckIcon, FunnelIcon } from "@heroicons/react/24/outline";
-import { getAccessCodes, generateAccessCodes, deleteAccessCode } from "../../lib/supabase";
+import { getAccessCodes, generateAccessCodes, deleteAccessCode } from "../../lib/api";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const Codes = () => {

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { MagnifyingGlassIcon, ClipboardDocumentListIcon, CalendarIcon, PhoneIcon, UserIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { getRegistrations, deleteRegistration } from "../../lib/supabase";
+import { getRegistrations, deleteRegistration, socket } from "../../lib/api";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const Registrations = () => {
@@ -13,6 +13,17 @@ const Registrations = () => {
 
   useEffect(() => {
     loadRegistrations();
+
+    // Socket listeners for real-time updates
+    socket.on("registration_created", loadRegistrations);
+    socket.on("registration_updated", loadRegistrations);
+    socket.on("registration_deleted", loadRegistrations);
+
+    return () => {
+      socket.off("registration_created", loadRegistrations);
+      socket.off("registration_updated", loadRegistrations);
+      socket.off("registration_deleted", loadRegistrations);
+    };
   }, []);
 
   const loadRegistrations = async () => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { CheckCircleIcon, CalendarIcon, PhoneIcon, UserIcon, ChevronRightIcon, TrashIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline";
-import { getCompletedPatients, deleteRegistration } from "../../lib/supabase";
+import { getCompletedPatients, deleteRegistration } from "../../lib/api";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 import * as XLSX from "xlsx";
 

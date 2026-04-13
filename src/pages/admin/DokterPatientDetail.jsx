@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeftIcon, UserIcon, PhoneIcon, CalendarIcon, ClipboardDocumentListIcon } from "@heroicons/react/24/outline";
-import { getPatientDetail } from "../../lib/supabase";
+import { getPatientDetail } from "../../lib/api";
 
 const DokterPatientDetail = () => {
   const { id } = useParams();

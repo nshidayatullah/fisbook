@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { CalendarDaysIcon, PlusIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
-import { getSlotsGroupedByDate, generateSlots, deleteSlot } from "../../lib/supabase";
+import { getSlotsGroupedByDate, generateSlots, deleteSlot, socket } from "../../lib/api";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const Slots = () => {
@@ -26,6 +26,13 @@ const Slots = () => {
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     setSelectedDate(tomorrow.toISOString().split("T")[0]);
+
+    // Socket listeners for real-time updates
+    socket.on("slots_updated", loadSlots);
+
+    return () => {
+      socket.off("slots_updated", loadSlots);
+    };
   }, []);
 
   const loadSlots = async () => {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { CheckCircleIcon, PhoneIcon, UserIcon, ChevronRightIcon, ArrowDownTrayIcon } from "@heroicons/react/24/outline";
-import { getCompletedPatients } from "../../lib/supabase";
+import { getCompletedPatients } from "../../lib/api";
 import * as XLSX from "xlsx";
 
 const DokterHistory = () => {

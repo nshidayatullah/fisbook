@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { CalendarDaysIcon, KeyIcon, ClipboardDocumentListIcon, BuildingOfficeIcon, ArrowTrendingUpIcon, UsersIcon } from "@heroicons/react/24/outline";
-import { getDashboardStats, getRegistrations } from "../../lib/supabase";
+import { getDashboardStats, getRegistrations } from "../../lib/api";
 
 const Dashboard = () => {
   const [stats, setStats] = useState(null);

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { UsersIcon, CalendarIcon, PhoneIcon, UserIcon, ChevronRightIcon, KeyIcon } from "@heroicons/react/24/outline";
-import { getPendingPatients } from "../../lib/supabase";
+import { getPendingPatients } from "../../lib/api";
 
 const FisioterApisDashboard = () => {
   const [patients, setPatients] = useState([]);

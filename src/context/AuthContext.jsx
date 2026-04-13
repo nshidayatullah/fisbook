@@ -1,5 +1,5 @@
 import { createContext, useState, useEffect, useRef } from "react";
-import { supabase, getCurrentUser } from "../lib/supabase";
+import { getCurrentUser } from "../lib/api";
 
 const AuthContext = createContext({});
 
@@ -37,17 +37,8 @@ export const AuthProvider = ({ children }) => {
 
     checkUser();
 
-    // Listen for auth state changes
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
     return () => {
       clearTimeout(timeout);
-      subscription.unsubscribe();
     };
   }, []);
 

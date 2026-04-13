@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { Bars3Icon, XMarkIcon, ArrowRightOnRectangleIcon, ClipboardDocumentListIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
-import { signOut, getCurrentUser, getUserProfile } from "../../lib/supabase";
+import { signOut, getCurrentUser, getUserProfile } from "../../lib/api";
 import AppFooter from "../../components/ui/AppFooter";
 
 const navigation = [
@@ -23,14 +23,14 @@ const FisioterapisLayout = () => {
 
   const checkAuth = async () => {
     try {
-      const user = await getCurrentUser();
+      const authUser = await getCurrentUser();
 
-      if (!user) {
+      if (!authUser) {
         navigate("/fisioterapis/login");
         return;
       }
 
-      const { data: profile } = await getUserProfile(user.id);
+      const { data: profile } = await getUserProfile(authUser.id);
 
       if (!profile || profile.role !== "fisioterapis") {
         navigate("/fisioterapis/login");

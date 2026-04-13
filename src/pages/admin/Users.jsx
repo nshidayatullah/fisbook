@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { UsersIcon, PlusIcon, PencilIcon, TrashIcon, CheckIcon, KeyIcon } from "@heroicons/react/24/outline";
-import { getAllUsers, createUser, updateUserProfile, deleteUser } from "../../lib/supabase";
+import { getAllUsers, createUser, updateUserProfile, deleteUser } from "../../lib/api";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const Users = () => {
@@ -84,11 +84,11 @@ const Users = () => {
     }
   };
 
-  const openEditModal = (user) => {
+  const openEditModal = (u) => {
     setEditData({
-      id: user.id,
-      full_name: user.full_name || "",
-      role: user.role || "admin",
+      id: u.id,
+      full_name: u.full_name || "",
+      role: u.role || "paramedic",
     });
     setShowEditModal(true);
   };
@@ -119,11 +119,11 @@ const Users = () => {
     }
   };
 
-  const openDeleteModal = (user) => {
+  const openDeleteModal = (u) => {
     setDeleteModal({
       open: true,
-      userId: user.id,
-      userName: user.full_name || user.email,
+      userId: u.id,
+      userName: u.full_name || u.email,
     });
   };
 
@@ -151,17 +151,17 @@ const Users = () => {
     }
   };
 
-  const openResetModal = (user) => {
+  const openResetModal = (u) => {
     setResetData({
-      userId: user.id,
-      userName: user.full_name || user.email,
-      userEmail: user.email,
+      userId: u.id,
+      userName: u.full_name || u.email,
+      userEmail: u.email,
     });
     setShowResetModal(true);
   };
 
   const getRoleBadge = (role) => {
-    if (role === "admin") {
+    if (role === "paramedic") {
       return "bg-purple-500/10 text-purple-400 border-purple-500/20";
     }
     return "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
@@ -226,6 +226,10 @@ const Users = () => {
           <p className="mt-1 text-3xl font-bold text-white">{users.length}</p>
         </div>
         <div className="rounded-2xl bg-gray-800/50 backdrop-blur-md p-5 border border-white/5 shadow-lg">
+          <p className="text-sm font-medium text-gray-400">Paramedic</p>
+          <p className="mt-1 text-3xl font-bold text-white">{users.filter((u) => u.role === "paramedic").length}</p>
+        </div>
+        <div className="rounded-2xl bg-gray-800/50 backdrop-blur-md p-5 border border-white/5 shadow-lg">
           <p className="text-sm font-medium text-gray-400">Fisioterapis</p>
           <p className="mt-1 text-3xl font-bold text-white">{users.filter((u) => u.role === "fisioterapis").length}</p>
         </div>
@@ -283,7 +287,7 @@ const Users = () => {
                 >
                   <option value="fisioterapis">Fisioterapis</option>
                   <option value="dokter">Dokter</option>
-                  <option value="admin">Admin</option>
+                  <option value="paramedic">Paramedic</option>
                 </select>
               </div>
             </div>
@@ -307,25 +311,25 @@ const Users = () => {
           </div>
         ) : (
           <div className="divide-y divide-white/5">
-            {users.map((user) => (
-              <div key={user.id} className="flex items-center justify-between px-6 py-4 hover:bg-white/5 transition-colors">
+            {users.map((u) => (
+              <div key={u.id} className="flex items-center justify-between px-6 py-4 hover:bg-white/5 transition-colors">
                 <div className="flex items-center gap-4 flex-1">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-500/20 text-sm font-bold text-indigo-400">{user.full_name?.charAt(0) || user.email?.charAt(0) || "U"}</div>
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-500/20 text-sm font-bold text-indigo-400">{u.full_name?.charAt(0) || u.email?.charAt(0) || "U"}</div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-white truncate">{user.full_name || "Belum diisi"}</p>
-                    <p className="text-xs text-gray-400 truncate">{user.email}</p>
+                    <p className="text-sm font-semibold text-white truncate">{u.full_name || "Belum diisi"}</p>
+                    <p className="text-xs text-gray-400 truncate">{u.email}</p>
                   </div>
-                  <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium border ${getRoleBadge(user.role)}`}>{user.role || "admin"}</span>
+                  <span className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium border ${getRoleBadge(u.role)}`}>{u.role || "paramedic"}</span>
                 </div>
 
                 <div className="flex items-center gap-2 ml-4">
-                  <button onClick={() => openEditModal(user)} className="rounded-lg p-2 text-gray-400 hover:bg-indigo-500/10 hover:text-indigo-400 transition-colors" title="Edit User">
+                  <button onClick={() => openEditModal(u)} className="rounded-lg p-2 text-gray-400 hover:bg-indigo-500/10 hover:text-indigo-400 transition-colors" title="Edit User">
                     <PencilIcon className="h-5 w-5" />
                   </button>
-                  <button onClick={() => openResetModal(user)} className="rounded-lg p-2 text-gray-400 hover:bg-yellow-500/10 hover:text-yellow-400 transition-colors" title="Reset Password">
+                  <button onClick={() => openResetModal(u)} className="rounded-lg p-2 text-gray-400 hover:bg-yellow-500/10 hover:text-yellow-400 transition-colors" title="Reset Password">
                     <KeyIcon className="h-5 w-5" />
                   </button>
-                  <button onClick={() => openDeleteModal(user)} className="rounded-lg p-2 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors" title="Hapus user">
+                  <button onClick={() => openDeleteModal(u)} className="rounded-lg p-2 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors" title="Hapus user">
                     <TrashIcon className="h-5 w-5" />
                   </button>
                 </div>
@@ -357,7 +361,7 @@ const Users = () => {
                   onChange={(e) => setEditData({ ...editData, role: e.target.value })}
                   className="block w-full rounded-lg bg-white/5 px-4 py-3 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
                 >
-                  <option value="admin">Admin</option>
+                  <option value="paramedic">Paramedic</option>
                   <option value="dokter">Dokter</option>
                   <option value="fisioterapis">Fisioterapis</option>
                 </select>

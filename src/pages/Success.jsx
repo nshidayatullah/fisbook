@@ -4,21 +4,20 @@ import Footer from "../components/ui/Footer";
 
 const Success = () => {
   const navigate = useNavigate();
-  const [registration, setRegistration] = useState(null);
+  const [registration] = useState(() => {
+    try {
+      const storedReg = sessionStorage.getItem("registration");
+      return storedReg ? JSON.parse(storedReg) : null;
+    } catch {
+      return null;
+    }
+  });
 
   useEffect(() => {
-    const storedReg = sessionStorage.getItem("registration");
-    if (!storedReg) {
-      navigate("/");
-      return;
-    }
-
-    try {
-      setRegistration(JSON.parse(storedReg));
-    } catch {
+    if (!registration) {
       navigate("/");
     }
-  }, [navigate]);
+  }, [registration, navigate]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);

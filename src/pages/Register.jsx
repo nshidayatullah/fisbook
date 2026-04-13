@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getSlotsGroupedByDate, getDepartments, createRegistration, markCodeAsUsed, bookSlot } from "../lib/supabase";
+import { getSlotsGroupedByDate, getDepartments, createRegistration, markCodeAsUsed, bookSlot } from "../lib/api";
 import Footer from "../components/ui/Footer";
 
 const Register = () => {

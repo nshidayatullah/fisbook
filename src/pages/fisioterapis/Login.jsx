@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signIn, getUserProfile } from "../../lib/supabase";
+import { signIn, getUserProfile } from "../../lib/api";
 
 const FisioterapisLogin = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const FisioterapisLogin = () => {
       }
 
       // Check user role
-      const { data: profile, error: profileError } = await getUserProfile(data.user.id);
+      const { data: profile, error: profileError } = await getUserProfile(data.id);
 
       if (profileError || !profile) {
         setError("Gagal memuat profil pengguna");
