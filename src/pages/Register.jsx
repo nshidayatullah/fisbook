@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getSlotsGroupedByDate, getDepartments, createRegistration, markCodeAsUsed, bookSlot } from "../lib/api";
+import { getSlotsGroupedByDate, getDepartments, createRegistration } from "../lib/api";
 import Footer from "../components/ui/Footer";
 import { SkeletonForm } from "../components/ui/Skeleton";
 
@@ -122,26 +122,6 @@ const Register = () => {
     setError("");
 
     try {
-      const { error: slotError } = await bookSlot(selectedSlot.id);
-      if (slotError) {
-        if (slotError.message.includes("constraint")) {
-          setError("Slot sudah dipesan orang lain. Silakan pilih slot lain.");
-          loadData();
-          console.error("Slot booking error:", slotError);
-          setError(`Gagal memesan slot: ${slotError.message || "Unknown error"}`);
-        }
-        setSubmitting(false);
-        return;
-      }
-
-      const { error: codeError } = await markCodeAsUsed(accessCode.id);
-      if (codeError) {
-        console.error("Access code error:", codeError);
-        setError(`Gagal memproses kode akses: ${codeError.message}`);
-        setSubmitting(false);
-        return;
-      }
-
       const registrationData = {
         accessCodeId: accessCode.id,
         slotId: selectedSlot.id,
@@ -156,7 +136,17 @@ const Register = () => {
 
       if (regError) {
         console.error("Registration error:", regError);
-        setError(`Gagal menyimpan pendaftaran: ${regError.error || regError.message || "Unknown error"}`);
+        const errorMessage = regError.error || regError.message || "Unknown error";
+        
+        if (errorMessage.includes("Jadwal") || errorMessage.includes("SLOT")) {
+          setError("Slot sudah dipesan orang lain. Silakan pilih slot lain.");
+          loadData();
+        } else if (errorMessage.includes("Kode") || errorMessage.includes("KODE")) {
+          setError("Kode akses tidak valid atau sudah digunakan.");
+        } else {
+          setError(`Gagal menyimpan pendaftaran: ${errorMessage}`);
+        }
+        
         setSubmitting(false);
         return;
       }

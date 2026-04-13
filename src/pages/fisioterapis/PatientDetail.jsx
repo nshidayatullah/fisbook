@@ -20,33 +20,33 @@ const PatientDetail = () => {
   });
 
   useEffect(() => {
+    const loadPatientData = async () => {
+      try {
+        const { data, error: fetchError } = await getPatientDetail(id);
+
+        if (fetchError) throw fetchError;
+
+        setPatient(data);
+
+        // If already completed, pre-fill form
+        if (data.status_kunjungan === "selesai") {
+          setFormData({
+            anamnesa: data.anamnesa || "",
+            pemeriksaan_fisik: data.pemeriksaan_fisik || "",
+            tindakan_dilakukan: data.tindakan_dilakukan || "",
+            rencana_tindakan: data.rencana_tindakan || "",
+          });
+        }
+      } catch (err) {
+        console.error(err);
+        setError("Gagal memuat data pasien");
+      } finally {
+        setLoading(false);
+      }
+    };
+
     loadPatientData();
   }, [id]);
-
-  const loadPatientData = async () => {
-    try {
-      const { data, error: fetchError } = await getPatientDetail(id);
-
-      if (fetchError) throw fetchError;
-
-      setPatient(data);
-
-      // If already completed, pre-fill form
-      if (data.status_kunjungan === "selesai") {
-        setFormData({
-          anamnesa: data.anamnesa || "",
-          pemeriksaan_fisik: data.pemeriksaan_fisik || "",
-          tindakan_dilakukan: data.tindakan_dilakukan || "",
-          rencana_tindakan: data.rencana_tindakan || "",
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      setError("Gagal memuat data pasien");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
