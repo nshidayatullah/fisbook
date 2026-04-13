@@ -196,7 +196,7 @@ app.get('/api/slots', async (req, res) => {
   }
 });
 
-app.post('/api/slots/generate', authenticateToken, requireSuperadmin, async (req, res) => {
+app.post('/api/slots/generate', authenticateToken, requireRoles(['superadmin', 'paramedic']), async (req, res) => {
   const { date, hours } = req.body;
   try {
     const slots = await Promise.all(hours.map(hour => 
@@ -227,7 +227,7 @@ app.patch('/api/slots/:id/book', async (req, res) => {
 });
 
 // --- ACCESS CODES ROUTES ---
-app.get('/api/access-codes', authenticateToken, requireSuperadmin, async (req, res) => {
+app.get('/api/access-codes', authenticateToken, requireRoles(['superadmin', 'paramedic', 'dokter']), async (req, res) => {
   try {
     const codes = await prisma.accessCode.findMany({
       include: { registration: true },
@@ -264,7 +264,7 @@ app.patch('/api/access-codes/:id/use', async (req, res) => {
   }
 });
 
-app.post('/api/access-codes/generate', authenticateToken, requireSuperadmin, async (req, res) => {
+app.post('/api/access-codes/generate', authenticateToken, requireRoles(['superadmin', 'paramedic']), async (req, res) => {
   const { count = 10 } = req.body;
   try {
     const newCodes = [];
@@ -280,7 +280,7 @@ app.post('/api/access-codes/generate', authenticateToken, requireSuperadmin, asy
   }
 });
 
-app.delete('/api/access-codes/:id', authenticateToken, requireSuperadmin, async (req, res) => {
+app.delete('/api/access-codes/:id', authenticateToken, requireRoles(['superadmin', 'paramedic']), async (req, res) => {
   try {
     await prisma.accessCode.delete({ where: { id: req.params.id } });
     res.json({ success: true });
@@ -289,7 +289,7 @@ app.delete('/api/access-codes/:id', authenticateToken, requireSuperadmin, async 
   }
 });
 
-app.delete('/api/slots/:id', authenticateToken, requireSuperadmin, async (req, res) => {
+app.delete('/api/slots/:id', authenticateToken, requireRoles(['superadmin', 'paramedic']), async (req, res) => {
   try {
     await prisma.slot.delete({ where: { id: req.params.id } });
     io.emit('slots_updated');

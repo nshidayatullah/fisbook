@@ -75,7 +75,7 @@ const Success = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Nama</p>
-                  <p className="text-base font-semibold text-gray-900">{registration.nama_lengkap}</p>
+                  <p className="text-base font-semibold text-gray-900">{registration.namaLengkap}</p>
                 </div>
               </div>
 
@@ -106,7 +106,7 @@ const Success = () => {
                 </div>
                 <div>
                   <p className="text-sm text-gray-500">Departemen</p>
-                  <p className="text-base font-semibold text-gray-900">{registration.departments?.name}</p>
+                  <p className="text-base font-semibold text-gray-900">{registration.department?.name}</p>
                 </div>
               </div>
 
@@ -118,8 +118,8 @@ const Success = () => {
                   </svg>
                   <span className="text-sm font-semibold text-emerald-800">Jadwal Fisioterapi</span>
                 </div>
-                <p className="text-lg font-bold text-emerald-900">{formatDate(registration.slots?.date)}</p>
-                <p className="mt-1 text-emerald-700">🕐 {formatHour(registration.slots?.hour)}</p>
+                <p className="text-lg font-bold text-emerald-900">{formatDate(registration.slot?.date)}</p>
+                <p className="mt-1 text-emerald-700">🕐 {formatHour(registration.slot?.hour)}</p>
               </div>
 
               {/* Location */}

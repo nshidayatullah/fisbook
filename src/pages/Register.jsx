@@ -142,12 +142,12 @@ const Register = () => {
       }
 
       const registrationData = {
-        access_code_id: accessCode.id,
-        slot_id: selectedSlot.id,
-        department_id: formData.department_id,
-        nama_lengkap: formData.nama_lengkap.toUpperCase(),
+        accessCodeId: accessCode.id,
+        slotId: selectedSlot.id,
+        departmentId: formData.department_id,
+        namaLengkap: formData.nama_lengkap.toUpperCase(),
         nik: formData.nik,
-        no_hp: formData.no_hp,
+        noHp: formData.no_hp,
         keluhan: formData.keluhan,
       };
 
