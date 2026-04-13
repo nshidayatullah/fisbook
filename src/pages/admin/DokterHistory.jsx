@@ -113,7 +113,7 @@ const DokterHistory = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-2xl bg-gradient-to-r from-emerald-600 to-emerald-700 p-6 text-white shadow-lg shadow-emerald-500/20 border border-white/10">
+      <div className="rounded-2xl bg-linear-to-r from-emerald-600 to-emerald-700 p-6 text-white shadow-lg shadow-emerald-500/20 border border-white/10">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold">Riwayat Pelayanan</h2>

@@ -116,7 +116,7 @@ const UnifiedLogin = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full rounded-lg bg-gradient-to-r from-blue-600 to-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-lg hover:from-blue-500 hover:to-emerald-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
+                className="w-full rounded-lg bg-linear-to-r from-blue-600 to-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-lg hover:from-blue-500 hover:to-emerald-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
               >
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">

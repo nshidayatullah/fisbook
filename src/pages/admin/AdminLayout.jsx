@@ -92,12 +92,12 @@ const AdminLayout = () => {
 
       {/* Mobile sidebar */}
       <Dialog open={sidebarOpen} onClose={setSidebarOpen} className="relative z-50 lg:hidden">
-        <DialogBackdrop transition className="fixed inset-0 bg-gray-900/80 backdrop-blur-sm transition-opacity duration-300 ease-linear data-[closed]:opacity-0" />
+        <DialogBackdrop transition className="fixed inset-0 bg-gray-900/80 backdrop-blur-sm transition-opacity duration-300 ease-linear data-closed:opacity-0" />
 
         <div className="fixed inset-0 flex">
-          <DialogPanel transition className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-[closed]:-translate-x-full">
+          <DialogPanel transition className="relative mr-16 flex w-full max-w-xs flex-1 transform transition duration-300 ease-in-out data-closed:-translate-x-full">
             <TransitionChild>
-              <div className="absolute left-full top-0 flex w-16 justify-center pt-5 duration-300 ease-in-out data-[closed]:opacity-0">
+              <div className="absolute left-full top-0 flex w-16 justify-center pt-5 duration-300 ease-in-out data-closed:opacity-0">
                 <button type="button" onClick={() => setSidebarOpen(false)} className="-m-2.5 p-2.5">
                   <span className="sr-only">Close sidebar</span>
                   <XMarkIcon aria-hidden="true" className="h-6 w-6 text-white" />
@@ -223,7 +223,7 @@ const AdminLayout = () => {
                 </MenuButton>
                 <MenuItems
                   transition
-                  className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-xl bg-gray-800 py-2 shadow-lg ring-1 ring-white/5 transition focus:outline-none data-[closed]:scale-95 data-[closed]:transform data-[closed]:opacity-0 data-[enter]:duration-100 data-[enter]:ease-out data-[leave]:duration-75 data-[leave]:ease-in"
+                  className="absolute right-0 z-10 mt-2.5 w-48 origin-top-right rounded-xl bg-gray-800 py-2 shadow-lg ring-1 ring-white/5 transition focus:outline-none data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-100 data-enter:ease-out data-leave:duration-75 data-leave:ease-in"
                 >
                   <MenuItem>
                     <div className="block px-3 py-2 text-sm text-gray-400 border-b border-white/5">{authUser?.email}</div>
@@ -240,7 +240,7 @@ const AdminLayout = () => {
         </div>
 
         {/* Page content */}
-        <main className="py-8 flex-grow">
+        <main className="py-8 grow">
           <div className="px-4 sm:px-6 lg:px-8">
             <PageTransition>
               <Outlet />

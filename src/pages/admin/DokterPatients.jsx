@@ -56,7 +56,7 @@ const DokterPatients = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white shadow-lg shadow-blue-500/20 border border-white/10">
+      <div className="rounded-2xl bg-linear-to-r from-blue-600 to-blue-700 p-6 text-white shadow-lg shadow-blue-500/20 border border-white/10">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold">Antrian Pasien</h2>

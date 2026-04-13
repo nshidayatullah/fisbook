@@ -67,7 +67,7 @@ const FisioterapisLayout = () => {
   }
 
   return (
-    <div className="relative min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-emerald-900">
+    <div className="relative min-h-screen bg-linear-to-br from-gray-900 via-gray-800 to-emerald-900">
       {/* Background Decor */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -right-40 h-[600px] w-[600px] rounded-full bg-emerald-500/10 blur-[100px]" />
@@ -175,7 +175,7 @@ const FisioterapisLayout = () => {
         </div>
 
         {/* Page content */}
-        <main className="py-8 flex-grow">
+        <main className="py-8 grow">
           <div className="px-4 sm:px-6 lg:px-8">
             <PageTransition>
               <Outlet />

@@ -83,7 +83,7 @@ const DokterPatientDetail = () => {
       </button>
 
       {/* Header */}
-      <div className="rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white shadow-lg shadow-blue-500/20 border border-white/10">
+      <div className="rounded-2xl bg-linear-to-r from-blue-600 to-blue-700 p-6 text-white shadow-lg shadow-blue-500/20 border border-white/10">
         <div className="flex items-center gap-4">
           <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 text-2xl font-bold">{patient.nama_lengkap?.charAt(0) || "?"}</div>
           <div>

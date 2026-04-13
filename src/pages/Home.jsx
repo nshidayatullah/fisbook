@@ -79,7 +79,7 @@ const Home = () => {
       {/* Background Image with Overlay */}
       <div className="absolute inset-0">
         <img src="/landing-bg.png" alt="Background Fisioterapi" className="h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 to-gray-900/60 mix-blend-multiply" />
+        <div className="absolute inset-0 bg-linear-to-r from-gray-900/90 to-gray-900/60 mix-blend-multiply" />
       </div>
 
       <div className="relative flex min-h-screen flex-col justify-between px-6 py-12 lg:px-8">
@@ -92,7 +92,7 @@ const Home = () => {
           </div>
 
           {/* Access Code Card */}
-          <div className="bg-white/10 px-6 py-12 shadow-2xl backdrop-blur-md sm:rounded-3xl sm:px-12 outline outline-1 outline-white/20">
+          <div className="bg-white/10 px-6 py-12 shadow-2xl backdrop-blur-md sm:rounded-3xl sm:px-12 outline-1 outline-white/20">
             <div className="text-center">
               <h3 className="text-xl font-bold text-white drop-shadow-sm">Mulai Pendaftaran</h3>
               <p className="mt-2 text-sm font-medium text-white/90">Masukkan 4 digit kode akses yang Anda terima</p>
@@ -125,7 +125,7 @@ const Home = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="group flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-indigo-500 hover:shadow-indigo-500/30 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:cursor-not-allowed disabled:opacity-70"
+                className="group flex w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 px-4 py-3.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-indigo-500 hover:shadow-indigo-500/30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-500 disabled:cursor-not-allowed disabled:opacity-70"
               >
                 {loading ? (
                   <>

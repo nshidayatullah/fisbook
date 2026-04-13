@@ -256,7 +256,7 @@ const Register = () => {
           </div>
 
           {/* Personal Information */}
-          <div className="rounded-2xl bg-white p-6 shadow-sm outline outline-1 -outline-offset-1 outline-gray-200">
+          <div className="rounded-2xl bg-white p-6 shadow-sm outline-1 -outline-offset-1 outline-gray-200">
             <h2 className="text-base font-semibold text-gray-900 mb-6">Data Diri</h2>
             <div className="space-y-5">
               {/* Nama Lengkap */}
@@ -272,7 +272,7 @@ const Register = () => {
                     placeholder="Masukkan nama lengkap"
                     value={formData.nama_lengkap}
                     onChange={handleInputChange}
-                    className={`block w-full rounded-lg bg-white px-4 py-3 text-base text-gray-900 outline outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 ${
+                    className={`block w-full rounded-lg bg-white px-4 py-3 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 ${
                       errors.nama_lengkap ? "outline-red-300" : "outline-gray-300"
                     }`}
                   />
@@ -293,7 +293,7 @@ const Register = () => {
                     placeholder="Masukkan NIK"
                     value={formData.nik}
                     onChange={handleInputChange}
-                    className={`block w-full rounded-lg bg-white px-4 py-3 text-base text-gray-900 outline outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 ${
+                    className={`block w-full rounded-lg bg-white px-4 py-3 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 ${
                       errors.nik ? "outline-red-300" : "outline-gray-300"
                     }`}
                   />
@@ -314,7 +314,7 @@ const Register = () => {
                     placeholder="08xxxxxxxxxx"
                     value={formData.no_hp}
                     onChange={handleInputChange}
-                    className={`block w-full rounded-lg bg-white px-4 py-3 text-base text-gray-900 outline outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 ${
+                    className={`block w-full rounded-lg bg-white px-4 py-3 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 ${
                       errors.no_hp ? "outline-red-300" : "outline-gray-300"
                     }`}
                   />
@@ -333,7 +333,7 @@ const Register = () => {
                     name="department_id"
                     value={formData.department_id}
                     onChange={handleInputChange}
-                    className={`block w-full rounded-lg bg-white px-4 py-3 text-base text-gray-900 outline outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 ${
+                    className={`block w-full rounded-lg bg-white px-4 py-3 text-base text-gray-900 outline-1 -outline-offset-1 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 ${
                       errors.department_id ? "outline-red-300" : "outline-gray-300"
                     }`}
                   >
@@ -363,7 +363,7 @@ const Register = () => {
                     placeholder="Jelaskan keluhan Anda..."
                     value={formData.keluhan}
                     onChange={handleInputChange}
-                    className={`block w-full rounded-lg bg-white px-4 py-3 text-base text-gray-900 outline outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 ${
+                    className={`block w-full rounded-lg bg-white px-4 py-3 text-base text-gray-900 outline-1 -outline-offset-1 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6 ${
                       errors.keluhan ? "outline-red-300" : "outline-gray-300"
                     }`}
                   />
@@ -374,7 +374,7 @@ const Register = () => {
           </div>
 
           {/* Slot Selection */}
-          <div className="rounded-2xl bg-white p-6 shadow-sm outline outline-1 -outline-offset-1 outline-gray-200">
+          <div className="rounded-2xl bg-white p-6 shadow-sm outline-1 -outline-offset-1 outline-gray-200">
             <div className="mb-6">
               <h2 className="text-base font-semibold text-gray-900">Pilih Jadwal</h2>
               {errors.slot && <p className="mt-1 text-sm text-red-600">{errors.slot}</p>}
@@ -426,7 +426,7 @@ const Register = () => {
                           setSelectedSlot(slot);
                           setErrors((prev) => ({ ...prev, slot: "" }));
                         }}
-                        className={`rounded-xl p-4 text-left outline outline-2 -outline-offset-2 transition-all ${selectedSlot?.id === slot.id ? "bg-indigo-50 outline-indigo-600" : "bg-white outline-gray-200 hover:outline-gray-300"}`}
+                        className={`rounded-xl p-4 text-left outline-2 -outline-offset-2 transition-all ${selectedSlot?.id === slot.id ? "bg-indigo-50 outline-indigo-600" : "bg-white outline-gray-200 hover:outline-gray-300"}`}
                       >
                         <div className="flex items-center gap-2">
                           <div className={`h-3 w-3 rounded-full ${selectedSlot?.id === slot.id ? "bg-indigo-600" : "bg-emerald-500"}`} />
@@ -457,7 +457,7 @@ const Register = () => {
 
           {/* Selected Summary */}
           {selectedSlot && (
-            <div className="rounded-2xl bg-emerald-50 p-5 outline outline-1 -outline-offset-1 outline-emerald-200">
+            <div className="rounded-2xl bg-emerald-50 p-5 outline-1 -outline-offset-1 outline-emerald-200">
               <div className="flex items-start gap-4">
                 <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100">
                   <svg className="h-5 w-5 text-emerald-600" viewBox="0 0 20 20" fill="currentColor">

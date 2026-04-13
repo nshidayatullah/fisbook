@@ -72,7 +72,7 @@ const Login = () => {
       </div>
 
       <div className="relative mt-10 sm:mx-auto sm:w-full sm:max-w-[480px]">
-        <div className="bg-gray-800/50 px-8 py-12 shadow-xl backdrop-blur-sm sm:rounded-2xl sm:px-12 outline outline-1 -outline-offset-1 outline-white/10">
+        <div className="bg-gray-800/50 px-8 py-12 shadow-xl backdrop-blur-sm sm:rounded-2xl sm:px-12 outline-1 -outline-offset-1 outline-white/10">
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error Alert */}
             {error && (
@@ -105,7 +105,7 @@ const Login = () => {
                   placeholder="admin@example.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="block w-full rounded-lg bg-white/5 px-4 py-3 text-base text-white outline outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm"
+                  className="block w-full rounded-lg bg-white/5 px-4 py-3 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm"
                 />
               </div>
             </div>
@@ -125,7 +125,7 @@ const Login = () => {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="block w-full rounded-lg bg-white/5 px-4 py-3 text-base text-white outline outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm"
+                  className="block w-full rounded-lg bg-white/5 px-4 py-3 text-base text-white outline-1 -outline-offset-1 outline-white/10 placeholder:text-gray-500 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-500 sm:text-sm"
                 />
               </div>
             </div>

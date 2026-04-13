@@ -62,10 +62,10 @@ const Alert = ({ children, variant = "info", icon: CustomIcon, className = "", o
       `}
       {...props}
     >
-      <div className="flex-shrink-0">{CustomIcon ? <CustomIcon className="h-5 w-5" /> : style.icon}</div>
+      <div className="shrink-0">{CustomIcon ? <CustomIcon className="h-5 w-5" /> : style.icon}</div>
       <div className="flex-1 text-sm">{children}</div>
       {onClose && (
-        <button onClick={onClose} className="flex-shrink-0 opacity-70 hover:opacity-100 transition-opacity">
+        <button onClick={onClose} className="shrink-0 opacity-70 hover:opacity-100 transition-opacity">
           <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
             <path
               fillRule="evenodd"

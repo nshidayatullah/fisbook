@@ -142,7 +142,7 @@ const History = () => {
       />
 
       {/* Header */}
-      <div className="rounded-2xl bg-gradient-to-r from-blue-600 to-blue-700 p-6 text-white shadow-lg shadow-blue-500/20 border border-white/10">
+      <div className="rounded-2xl bg-linear-to-r from-blue-600 to-blue-700 p-6 text-white shadow-lg shadow-blue-500/20 border border-white/10">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold">Riwayat Pelayanan</h2>
@@ -189,7 +189,7 @@ const History = () => {
       {success && (
         <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4">
           <div className="flex text-emerald-400">
-            <CheckCircleIcon className="h-5 w-5 flex-shrink-0" />
+            <CheckCircleIcon className="h-5 w-5 shrink-0" />
             <p className="ml-3 text-sm flex-1">{success}</p>
             <button onClick={() => setSuccess("")} className="ml-auto hover:text-emerald-300">
               ×

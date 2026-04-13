@@ -86,7 +86,7 @@ const Dashboard = () => {
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
-      <div className="rounded-2xl bg-gradient-to-r from-indigo-600 to-indigo-800 p-6 text-white shadow-lg shadow-indigo-500/20 border border-white/10">
+      <div className="rounded-2xl bg-linear-to-r from-indigo-600 to-indigo-800 p-6 text-white shadow-lg shadow-indigo-500/20 border border-white/10">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-bold">Selamat Datang! 👋</h2>
