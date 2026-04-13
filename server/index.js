@@ -118,7 +118,7 @@ app.post('/api/auth/login', loginLimiter, async (req, res) => {
 
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '24h' });
     res.json({ token, user: { id: user.id, email: user.email, role: user.role, fullName: user.fullName } });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
@@ -130,7 +130,7 @@ app.get('/api/auth/me', authenticateToken, async (req, res) => {
       select: { id: true, email: true, role: true, fullName: true, createdAt: true }
     });
     res.json(user);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
@@ -148,7 +148,7 @@ app.get('/api/users', authenticateToken, requireSuperadmin, async (req, res) => 
       return safe;
     });
     res.json(safeUsers);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal mengambil daftar pengguna' });
   }
 });
@@ -163,7 +163,7 @@ app.post('/api/users', authenticateToken, requireSuperadmin, async (req, res) =>
     const safeUser = { ...user };
     delete safeUser.password;
     res.json(safeUser);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal membuat pengguna baru' });
   }
 });
@@ -214,7 +214,7 @@ app.get('/api/slots', async (req, res) => {
       orderBy: [{ date: 'asc' }, { hour: 'asc' }]
     });
     res.json(slots);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal mengambil jadwal tersedia' });
   }
 });
@@ -231,7 +231,7 @@ app.post('/api/slots/generate', authenticateToken, requireRoles(['superadmin', '
     ));
     io.emit('slots_updated');
     res.json(slots);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal membuat jadwal' });
   }
 });
@@ -244,7 +244,7 @@ app.patch('/api/slots/:id/book', async (req, res) => {
     });
     io.emit('slots_updated');
     res.json(slot);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal memesan jadwal' });
   }
 });
@@ -257,7 +257,7 @@ app.get('/api/access-codes', authenticateToken, requireRoles(['superadmin', 'par
       orderBy: { createdAt: 'desc' }
     });
     res.json(codes);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal mengambil daftar kode' });
   }
 });
@@ -270,7 +270,7 @@ app.post('/api/access-codes/validate', codeValidateLimiter, async (req, res) => 
     });
     if (!accessCode) return res.status(404).json({ error: 'Kode tidak valid atau sudah digunakan' });
     res.json(accessCode);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
@@ -298,7 +298,7 @@ app.post('/api/access-codes/generate', authenticateToken, requireRoles(['superad
     }
     await prisma.accessCode.createMany({ data: newCodes });
     res.json({ success: true, count: newCodes.length });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal membuat kode akses' });
   }
 });
@@ -350,7 +350,7 @@ app.get('/api/departments', async (req, res) => {
       orderBy: { name: 'asc' }
     });
     res.json(depts);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal mengambil daftar departemen' });
   }
 });
@@ -362,7 +362,7 @@ app.post('/api/departments', authenticateToken, requireSuperadmin, async (req, r
       data: { name, isActive } 
     });
     res.json(dept);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal membuat departemen' });
   }
 });
@@ -375,7 +375,7 @@ app.patch('/api/departments/:id', authenticateToken, requireSuperadmin, async (r
       data: { name, isActive }
     });
     res.json(dept);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal memperbarui departemen' });
   }
 });
@@ -384,7 +384,7 @@ app.delete('/api/departments/:id', authenticateToken, requireSuperadmin, async (
   try {
     await prisma.department.delete({ where: { id: req.params.id } });
     res.json({ success: true });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal menghapus departemen' });
   }
 });
@@ -397,7 +397,7 @@ app.get('/api/registrations', authenticateToken, async (req, res) => {
       orderBy: { createdAt: 'desc' }
     });
     res.json(regs);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
@@ -410,7 +410,7 @@ app.get('/api/registrations/pending', authenticateToken, requireRoles(['superadm
       orderBy: { createdAt: 'desc' }
     });
     res.json(regs);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
@@ -483,7 +483,7 @@ app.get('/api/registrations/completed', authenticateToken, requireRoles(['supera
       orderBy: { updatedAt: 'desc' }
     });
     res.json(regs);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
@@ -496,7 +496,7 @@ app.get('/api/registrations/:id', authenticateToken, requireRoles(['superadmin',
     });
     if (!reg) return res.status(404).json({ error: 'Data pendaftaran tidak ditemukan' });
     res.json(reg);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Terjadi kesalahan server internal' });
   }
 });
@@ -517,7 +517,7 @@ app.patch('/api/registrations/:id/medical-record', authenticateToken, requireRol
     });
     io.emit('registration_updated', reg);
     res.json(reg);
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal memperbarui rekam medis' });
   }
 });
@@ -559,8 +559,8 @@ app.delete('/api/registrations/:id', authenticateToken, async (req, res) => {
 
     await prisma.$transaction(ops);
     res.json({ success: true });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Gagal menghapus pendaftaran' });
   }
 });
 
@@ -571,8 +571,8 @@ app.get('/api/whatsapp-messages', authenticateToken, async (req, res) => {
       orderBy: { name: 'asc' }
     });
     res.json(messages);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Gagal mengambil template pesan' });
   }
 });
 
@@ -581,22 +581,23 @@ app.get('/api/whatsapp-messages/:name', authenticateToken, async (req, res) => {
     const message = await prisma.whatsAppMessage.findUnique({
       where: { name: req.params.name }
     });
-    if (!message) return res.status(404).json({ error: 'Message mapping not found' });
+    if (!message) return res.status(404).json({ error: 'Template pesan tidak ditemukan' });
     res.json(message);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Gagal mengambil data template' });
   }
 });
 
 app.patch('/api/whatsapp-messages/:id', authenticateToken, requireRoles(['superadmin']), async (req, res) => {
+  const { content } = req.body;
   try {
     const message = await prisma.whatsAppMessage.update({
       where: { id: req.params.id },
-      data: req.body
+      data: { content }
     });
     res.json(message);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Gagal memperbarui template' });
   }
 });
 
@@ -614,8 +615,8 @@ app.get('/api/dashboard/stats', authenticateToken, async (req, res) => {
       available_codes: codes,
       total_departments: departments
     });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
+  } catch {
+    res.status(500).json({ error: 'Gagal mengambil statistik dashboard' });
   }
 });
 
