@@ -159,6 +159,11 @@ const Dashboard = () => {
               </div>
             ))
           ) : recentRegistrations.length === 0 ? (
+            <div className="px-6 py-12 text-center">
+              <ClipboardDocumentListIcon className="mx-auto h-12 w-12 text-gray-600" />
+              <p className="mt-3 text-sm text-gray-400">Belum ada pendaftaran</p>
+            </div>
+          ) : (
             recentRegistrations.map((reg) => (
               <div key={reg.id} className="flex items-center justify-between px-6 py-4 hover:bg-white/5 transition-colors">
                 <div className="flex items-center gap-4">

@@ -298,7 +298,7 @@ const Codes = () => {
                         </td>
                       </tr>
                     ))}
-              </tbody>y>
+              </tbody>
             </table>
           </div>
         )}
