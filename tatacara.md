@@ -35,7 +35,35 @@ Aplikasi ini diperuntukkan **khusus bagi karyawan** untuk melakukan pendaftaran 
 ---
 **Tips Berhasil Daftar:**
 *   Daftarlah segera setelah menerima kode akses karena slot per hari terbatas.
-*   Pastikan koneksi internet stabil saat melakukan pemilihan slot.
+---
 
-Salam Sehat,
-**Tim Fisioterapi PhysioBook**
+## Template Pesan WhatsApp (Siap Salin)
+
+*📢 **PENGUMUMAN LAYANAN FISIOTERAPI (PhysioBook)** 📢*
+
+Halo Rekan-rekan Karyawan, 👋
+
+Dapatkan layanan fisioterapi profesional dengan mendaftar secara mandiri melalui aplikasi **PhysioBook**. Berikut tata cara pendaftarannya:
+
+1️⃣ **AKSES PORTAL** (Khusus Karyawan)
+Klik: https://fisioterapi.klinikppabib.com/login
+
+2️⃣ **INPUT KODE AKSES**
+Masukkan 4 digit kode akses unik yang Anda terima, lalu klik *Lanjutkan Pendaftaran*.
+
+3️⃣ **ISI DATA DIRI**
+Pilih Departemen, isi Nama Lengkap, NIK, No. WhatsApp, dan Keluhan Anda.
+
+4️⃣ **PILIH JADWAL**
+Pilih jam yang tersedia (Slot berwarna hijau 🟢). Jam yang sudah dipesan akan otomatis hilang dari pilihan.
+
+5️⃣ **KONFIRMASI**
+Klik *Daftar Sekarang*. Jika berhasil, Anda akan melihat halaman konfirmasi sukses.
+
+📍 **PENTING:**
+- Datanglah ke ruang fisioterapi **10 menit sebelum** jadwal Anda.
+- Pastikan hadir tepat waktu agar tidak menggeser antrian berikutnya.
+
+Tetap sehat dan produktif bersama PhysioBook! 💪✨
+
+*#PhysioBook #HealthAndSafety #FisioterapiKaryawan*
