@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn, getUserProfile } from "../../lib/api";
+import { useAuth } from "../../hooks/useAuth";
 
 const FisioterapisLogin = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -36,6 +38,9 @@ const FisioterapisLogin = () => {
         setLoading(false);
         return;
       }
+
+      // Update global auth state immediately
+      setUser(profile);
 
       navigate("/fisioterapis/dashboard");
     } catch (err) {

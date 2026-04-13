@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn, getUserProfile } from "../lib/api";
+import { useAuth } from "../hooks/useAuth";
 
 const UnifiedLogin = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -22,15 +24,18 @@ const UnifiedLogin = () => {
         return;
       }
 
-      if (data?.user) {
+      if (data) {
         // Get user profile to check role
-        const { data: profile, error: profileError } = await getUserProfile(data.user.id);
+        const { data: profile, error: profileError } = await getUserProfile(data.id);
 
         if (profileError || !profile) {
           setError("Gagal memuat profil pengguna");
           setLoading(false);
           return;
         }
+
+        // Update global auth state immediately
+        setUser(profile);
 
         // Redirect based on role
         if (profile.role === "fisioterapis") {

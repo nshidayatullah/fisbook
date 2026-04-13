@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signIn, getUserProfile } from "../../lib/api";
+import { useAuth } from "../../hooks/useAuth";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { setUser } = useAuth();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -40,6 +42,8 @@ const Login = () => {
           setLoading(false);
           return;
         }
+        // Update global auth state immediately
+        setUser(profile);
 
         navigate("/admin/dashboard");
       }
