@@ -23,6 +23,8 @@ app.use(helmet({
 const allowedOrigins = [
   'https://fisioterapi.klinikppabib.com',
   'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
   'http://localhost:3000'
 ];
 
@@ -384,6 +386,19 @@ app.post('/api/registrations', async (req, res) => {
   }
 });
 
+app.get('/api/registrations/completed', authenticateToken, requireRoles(['superadmin', 'dokter', 'fisioterapis']), async (req, res) => {
+  try {
+    const regs = await prisma.registration.findMany({
+      where: { statusKunjungan: 'selesai' },
+      include: { slot: true, department: true, accessCode: true },
+      orderBy: { updatedAt: 'desc' }
+    });
+    res.json(regs);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 app.get('/api/registrations/:id', authenticateToken, requireRoles(['superadmin', 'dokter', 'paramedic', 'fisioterapis']), async (req, res) => {
   try {
     const reg = await prisma.registration.findUnique({
@@ -409,19 +424,6 @@ app.patch('/api/registrations/:id/medical-record', authenticateToken, requireRol
     });
     io.emit('registration_updated', reg);
     res.json(reg);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-});
-
-app.get('/api/registrations/completed', authenticateToken, requireRoles(['superadmin', 'dokter', 'fisioterapis']), async (req, res) => {
-  try {
-    const regs = await prisma.registration.findMany({
-      where: { statusKunjungan: 'selesai' },
-      include: { slot: true, department: true },
-      orderBy: { updatedAt: 'desc' }
-    });
-    res.json(regs);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

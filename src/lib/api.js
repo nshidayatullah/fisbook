@@ -78,10 +78,14 @@ export const markCodeAsUsed = async (id) => {
 export const getSlotsGroupedByDate = async () => {
   try {
     const { data } = await api.get('/api/slots');
-    // Group by date
+    // Group by date and map properties
     const grouped = data.reduce((acc, slot) => {
+      const mappedSlot = {
+        ...slot,
+        is_booked: slot.isBooked
+      };
       if (!acc[slot.date]) acc[slot.date] = [];
-      acc[slot.date].push(slot);
+      acc[slot.date].push(mappedSlot);
       return acc;
     }, {});
     return { data: grouped, error: null };
@@ -113,6 +117,26 @@ export const getDepartments = async () => {
   }
 };
 
+// Helper for uniform registration data mapping
+const mapRegistration = (reg) => {
+  if (!reg) return null;
+  return {
+    ...reg,
+    nama_lengkap: reg.namaLengkap,
+    no_hp: reg.noHp,
+    status_kunjungan: reg.statusKunjungan,
+    tanggal_kunjungan: reg.tanggalKunjungan,
+    pemeriksaan_fisik: reg.pemeriksaanFisik,
+    tindakan_dilakukan: reg.tindakanDilakukan,
+    rencana_tindakan: reg.rencanaTindakan,
+    fisioterapis_id: reg.fisioterapisId,
+    // Pluralize relations for frontend compatibility
+    departments: reg.department,
+    slots: reg.slot,
+    access_codes: reg.accessCode
+  };
+};
+
 // Registrations
 export const createRegistration = async (registrationData) => {
   try {
@@ -127,12 +151,7 @@ export const createRegistration = async (registrationData) => {
 export const getPendingPatients = async () => {
   try {
     const { data } = await api.get('/api/registrations/pending');
-    // Map backend response to match frontend expectation (camelCase to snake_case)
-    const mapped = data.map(reg => ({
-      ...reg,
-      nama_lengkap: reg.namaLengkap,
-      no_hp: reg.noHp,
-    }));
+    const mapped = (data || []).map(mapRegistration);
     return { data: mapped, error: null };
   } catch (error) {
     return { data: null, error: error.response?.data || error };
@@ -142,11 +161,7 @@ export const getPendingPatients = async () => {
 export const getPatientDetail = async (id) => {
   try {
     const { data } = await api.get(`/api/registrations/${id}`);
-    const mapped = {
-      ...data,
-      nama_lengkap: data.namaLengkap,
-      no_hp: data.noHp,
-    };
+    const mapped = mapRegistration(data);
     return { data: mapped, error: null };
   } catch (error) {
     return { data: null, error: error.response?.data || error };
@@ -182,7 +197,7 @@ export const getAllUsers = async () => {
   try {
     const { data } = await api.get('/api/users');
     // Map backend response (fullName -> full_name)
-    const mapped = data.map(u => ({
+    const mapped = (data || []).map(u => ({
       ...u,
       full_name: u.fullName
     }));
@@ -320,11 +335,7 @@ export const deleteDepartment = async (id) => {
 export const getRegistrations = async () => {
   try {
     const { data } = await api.get('/api/registrations');
-    const mapped = data.map(reg => ({
-      ...reg,
-      nama_lengkap: reg.namaLengkap,
-      no_hp: reg.noHp
-    }));
+    const mapped = (data || []).map(mapRegistration);
     return { data: mapped, error: null };
   } catch (error) {
     return { data: null, error: error.response?.data || error };
@@ -334,11 +345,7 @@ export const getRegistrations = async () => {
 export const getCompletedPatients = async () => {
   try {
     const { data } = await api.get('/api/registrations/completed');
-    const mapped = data.map(reg => ({
-      ...reg,
-      nama_lengkap: reg.namaLengkap,
-      no_hp: reg.noHp
-    }));
+    const mapped = (data || []).map(mapRegistration);
     return { data: mapped, error: null };
   } catch (error) {
     return { data: null, error: error.response?.data || error };
