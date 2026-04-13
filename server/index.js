@@ -327,7 +327,7 @@ app.delete('/api/access-codes/:id', authenticateToken, requireRoles(['superadmin
 
     await prisma.accessCode.delete({ where: { id: codeId } });
     res.json({ success: true });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal menghapus kode akses' });
   }
 });
@@ -337,7 +337,7 @@ app.delete('/api/slots/:id', authenticateToken, requireRoles(['superadmin', 'par
     await prisma.slot.delete({ where: { id: req.params.id } });
     io.emit('slots_updated');
     res.json({ success: true });
-  } catch (error) {
+  } catch {
     res.status(500).json({ error: 'Gagal menghapus jadwal' });
   }
 });
