@@ -155,7 +155,7 @@ const Register = () => {
 
       if (regError) {
         console.error("Registration error:", regError);
-        setError(`Gagal menyimpan pendaftaran: ${regError.message}`);
+        setError(`Gagal menyimpan pendaftaran: ${regError.error || regError.message || "Unknown error"}`);
         setSubmitting(false);
         return;
       }

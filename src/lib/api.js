@@ -116,16 +116,8 @@ export const getDepartments = async () => {
 // Registrations
 export const createRegistration = async (registrationData) => {
   try {
-    const payload = {
-      namaLengkap: registrationData.nama_lengkap,
-      nik: registrationData.nik,
-      noHp: registrationData.no_hp,
-      keluhan: registrationData.keluhan,
-      departmentId: registrationData.department_id,
-      slotId: registrationData.slot_id,
-      accessCodeId: registrationData.access_code_id,
-    };
-    const { data } = await api.post('/api/registrations', payload);
+    // registrationData is already formatted by the caller (Register.jsx)
+    const { data } = await api.post('/api/registrations', registrationData);
     return { data, error: null };
   } catch (error) {
     return { data: null, error: error.response?.data || error };
