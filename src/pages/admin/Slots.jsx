@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import { CalendarDaysIcon, PlusIcon, TrashIcon, CheckIcon } from "@heroicons/react/24/outline";
 import { getSlotsGroupedByDate, generateSlots, deleteSlot, socket } from "../../lib/api";
+import DatePicker from "react-datepicker";
+import { format } from "date-fns";
+import "react-datepicker/dist/react-datepicker.css";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const Slots = () => {
@@ -11,7 +14,7 @@ const Slots = () => {
   const [success, setSuccess] = useState("");
 
   // Form state
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedHours, setSelectedHours] = useState([]);
 
   // Delete modal state
@@ -25,7 +28,7 @@ const Slots = () => {
     // Set default date to tomorrow
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    setSelectedDate(tomorrow.toISOString().split("T")[0]);
+    setSelectedDate(tomorrow);
 
     // Socket listeners for real-time updates
     socket.on("slots_updated", loadSlots);
@@ -70,10 +73,11 @@ const Slots = () => {
     setSuccess("");
 
     try {
-      const { error } = await generateSlots(selectedDate, selectedHours);
+      const formattedDate = format(selectedDate, "yyyy-MM-dd");
+      const { error } = await generateSlots(formattedDate, selectedHours);
       if (error) throw error;
 
-      setSuccess(`Berhasil membuat ${selectedHours.length} slot untuk tanggal ${selectedDate}`);
+      setSuccess(`Berhasil membuat ${selectedHours.length} slot untuk tanggal ${format(selectedDate, "dd/MM/yyyy")}`);
       setSelectedHours([]);
       loadSlots();
     } catch {
@@ -204,14 +208,21 @@ const Slots = () => {
             <label htmlFor="slot-date" className="block text-sm font-medium text-gray-300">
               Tanggal
             </label>
-            <input
-              type="date"
-              id="slot-date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              min={new Date().toISOString().split("T")[0]}
-              className="mt-2 block w-full max-w-xs rounded-lg bg-white/5 px-4 py-3 text-base text-white border border-white/10 focus:border-indigo-500 focus:bg-white/10 focus:ring-1 focus:ring-indigo-500 [color-scheme:dark]"
-            />
+            <div className="relative mt-2 max-w-xs">
+              <DatePicker
+                selected={selectedDate}
+                onChange={(date) => setSelectedDate(date)}
+                minDate={new Date()}
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Pilih tanggal"
+                className="block w-full rounded-lg bg-white/5 pl-4 pr-10 py-3 text-base text-white border border-white/10 focus:border-indigo-500 focus:bg-white/10 focus:ring-1 focus:ring-indigo-500 outline-none transition-all cursor-pointer"
+                calendarClassName="dark-datepicker"
+                wrapperClassName="w-full"
+              />
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <CalendarDaysIcon className="h-5 w-5 text-gray-400" />
+              </div>
+            </div>
           </div>
 
           {/* Hour Selection */}
