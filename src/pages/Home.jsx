@@ -153,22 +153,10 @@ const Home = () => {
           </p>
         </div>
 
-        {/* Footer */}
-        <div className="mt-8 text-center text-xs text-gray-500 sm:mt-0">
-          <p>&copy; 2026 PhysioBook. All rights reserved.</p>
-          <div className="mt-4 flex items-center justify-center gap-4 text-center text-sm font-medium">
-            <a href="/admin/login" className="text-gray-400 hover:text-indigo-400 transition-colors">
-              Login Admin
-            </a>
-            <span className="text-gray-600">|</span>
-            <a href="/fisioterapis/login" className="text-gray-400 hover:text-emerald-400 transition-colors">
-              Login Fisioterapis
-            </a>
-          </div>
+        <div className="w-full mt-8 sm:mt-0">
+          <Footer />
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 };
