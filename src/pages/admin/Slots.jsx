@@ -6,6 +6,8 @@ import { format } from "date-fns";
 import "react-datepicker/dist/react-datepicker.css";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
+import { SkeletonGridItem } from "../../components/ui/Skeleton";
+
 const Slots = () => {
   const [slotsGrouped, setSlotsGrouped] = useState({});
   const [loading, setLoading] = useState(true);
@@ -137,20 +139,6 @@ const Slots = () => {
   const formatHour = (hour) => {
     return `${String(hour).padStart(2, "0")}:00 - ${String(hour + 1).padStart(2, "0")}:00`;
   };
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <svg className="mx-auto h-8 w-8 animate-spin text-indigo-500" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <p className="mt-3 text-gray-400">Memuat data...</p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-8">
@@ -285,7 +273,18 @@ const Slots = () => {
           <h3 className="text-lg font-semibold text-white">Daftar Slot</h3>
         </div>
         <div className="divide-y divide-white/5">
-          {Object.keys(slotsGrouped).length === 0 ? (
+          {loading ? (
+            Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="px-6 py-6 space-y-4">
+                <div className="h-5 w-48 animate-pulse rounded bg-white/5" />
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-6">
+                  {Array.from({ length: 6 }).map((_, j) => (
+                    <SkeletonGridItem key={j} />
+                  ))}
+                </div>
+              </div>
+            ))
+          ) : Object.keys(slotsGrouped).length === 0 ? (
             <div className="px-6 py-12 text-center">
               <CalendarDaysIcon className="mx-auto h-12 w-12 text-gray-600" />
               <p className="mt-3 text-sm text-gray-400">Belum ada slot</p>

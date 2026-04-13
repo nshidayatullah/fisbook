@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { CalendarDaysIcon, KeyIcon, ClipboardDocumentListIcon, BuildingOfficeIcon, ArrowTrendingUpIcon, UsersIcon } from "@heroicons/react/24/outline";
 import { getDashboardStats, getRegistrations } from "../../lib/api";
 
+import { SkeletonStat, SkeletonTableRow } from "../../components/ui/Skeleton";
+
 const Dashboard = () => {
   const [stats, setStats] = useState(null);
   const [recentRegistrations, setRecentRegistrations] = useState([]);
@@ -81,20 +83,6 @@ const Dashboard = () => {
     return `${String(hour).padStart(2, "0")}:00`;
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <svg className="mx-auto h-8 w-8 animate-spin text-indigo-500" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-          <p className="mt-3 text-gray-400">Memuat data...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-8">
       {/* Welcome Section */}
@@ -112,20 +100,22 @@ const Dashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {statCards.map((item) => (
-          <Link key={item.name} to={item.href} className="group relative overflow-hidden rounded-2xl bg-gray-800/50 backdrop-blur-md p-6 border border-white/5 shadow-lg transition hover:bg-gray-800/70 hover:shadow-xl">
-            <div className="flex items-center gap-4">
-              <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${item.bgColor}`}>
-                <item.icon className={`h-6 w-6 ${item.textColor}`} />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-400">{item.name}</p>
-                <p className="text-2xl font-bold text-white">{item.value}</p>
-              </div>
-            </div>
-            <div className={`absolute bottom-0 left-0 h-1 w-full ${item.color} transition-all group-hover:h-1.5 opacity-80`} />
-          </Link>
-        ))}
+        {loading
+          ? Array.from({ length: 4 }).map((_, i) => <SkeletonStat key={i} />)
+          : statCards.map((item) => (
+              <Link key={item.name} to={item.href} className="group relative overflow-hidden rounded-2xl bg-gray-800/50 backdrop-blur-md p-6 border border-white/5 shadow-lg transition hover:bg-gray-800/70 hover:shadow-xl">
+                <div className="flex items-center gap-4">
+                  <div className={`flex h-12 w-12 items-center justify-center rounded-xl ${item.bgColor}`}>
+                    <item.icon className={`h-6 w-6 ${item.textColor}`} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-400">{item.name}</p>
+                    <p className="text-2xl font-bold text-white">{item.value}</p>
+                  </div>
+                </div>
+                <div className={`absolute bottom-0 left-0 h-1 w-full ${item.color} transition-all group-hover:h-1.5 opacity-80`} />
+              </Link>
+            ))}
       </div>
 
       {/* Quick Actions */}
@@ -156,12 +146,19 @@ const Dashboard = () => {
           </Link>
         </div>
         <div className="divide-y divide-white/5">
-          {recentRegistrations.length === 0 ? (
-            <div className="px-6 py-12 text-center">
-              <ClipboardDocumentListIcon className="mx-auto h-12 w-12 text-gray-600" />
-              <p className="mt-3 text-sm text-gray-400">Belum ada pendaftaran</p>
-            </div>
-          ) : (
+          {loading ? (
+            Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="flex items-center justify-between px-6 py-4">
+                <div className="flex items-center gap-4 w-full">
+                  <div className="h-10 w-10 animate-pulse rounded-full bg-white/5" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-32 animate-pulse rounded bg-white/5" />
+                    <div className="h-3 w-24 animate-pulse rounded bg-white/5" />
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : recentRegistrations.length === 0 ? (
             recentRegistrations.map((reg) => (
               <div key={reg.id} className="flex items-center justify-between px-6 py-4 hover:bg-white/5 transition-colors">
                 <div className="flex items-center gap-4">

@@ -3,6 +3,8 @@ import { MagnifyingGlassIcon, ClipboardDocumentListIcon, CalendarIcon, PhoneIcon
 import { getRegistrations, deleteRegistration, socket } from "../../lib/api";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
+import { SkeletonStat } from "../../components/ui/Skeleton";
+
 const Registrations = () => {
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -85,20 +87,6 @@ const Registrations = () => {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="text-center">
-          <svg className="mx-auto h-8 w-8 animate-spin text-indigo-500" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-          </svg>
-          <p className="mt-3 text-gray-400">Memuat data...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6">
       {/* Delete Confirmation Modal */}
@@ -149,35 +137,41 @@ const Registrations = () => {
 
       {/* Stats */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-        <div className="rounded-2xl bg-gray-800/50 backdrop-blur-md p-5 border border-white/5 shadow-lg">
-          <p className="text-sm font-medium text-gray-400">Total Pendaftaran</p>
-          <p className="mt-1 text-2xl font-bold text-white">{registrations.length}</p>
-        </div>
-        <div className="rounded-2xl bg-blue-500/10 backdrop-blur-md p-5 border border-blue-500/20">
-          <p className="text-sm font-medium text-blue-400">Hari Ini</p>
-          <p className="mt-1 text-2xl font-bold text-blue-500">
-            {
-              registrations.filter((r) => {
-                const today = new Date().toISOString().split("T")[0];
-                return r.slots?.date === today;
-              }).length
-            }
-          </p>
-        </div>
-        <div className="rounded-2xl bg-emerald-500/10 backdrop-blur-md p-5 border border-emerald-500/20">
-          <p className="text-sm font-medium text-emerald-400">Minggu Ini</p>
-          <p className="mt-1 text-2xl font-bold text-emerald-500">
-            {
-              registrations.filter((r) => {
-                const now = new Date();
-                const slotDate = new Date(r.slots?.date);
-                const diffTime = slotDate.getTime() - now.getTime();
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                return diffDays >= 0 && diffDays <= 7;
-              }).length
-            }
-          </p>
-        </div>
+        {loading
+          ? Array.from({ length: 3 }).map((_, i) => <SkeletonStat key={i} />)
+          : (
+            <>
+              <div className="rounded-2xl bg-gray-800/50 backdrop-blur-md p-5 border border-white/5 shadow-lg">
+                <p className="text-sm font-medium text-gray-400">Total Pendaftaran</p>
+                <p className="mt-1 text-2xl font-bold text-white">{registrations.length}</p>
+              </div>
+              <div className="rounded-2xl bg-blue-500/10 backdrop-blur-md p-5 border border-blue-500/20">
+                <p className="text-sm font-medium text-blue-400">Hari Ini</p>
+                <p className="mt-1 text-2xl font-bold text-blue-500">
+                  {
+                    registrations.filter((r) => {
+                      const today = new Date().toISOString().split("T")[0];
+                      return r.slots?.date === today;
+                    }).length
+                  }
+                </p>
+              </div>
+              <div className="rounded-2xl bg-emerald-500/10 backdrop-blur-md p-5 border border-emerald-500/20">
+                <p className="text-sm font-medium text-emerald-400">Minggu Ini</p>
+                <p className="mt-1 text-2xl font-bold text-emerald-500">
+                  {
+                    registrations.filter((r) => {
+                      const now = new Date();
+                      const slotDate = new Date(r.slots?.date);
+                      const diffTime = slotDate.getTime() - now.getTime();
+                      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                      return diffDays >= 0 && diffDays <= 7;
+                    }).length
+                  }
+                </p>
+              </div>
+            </>
+          )}
       </div>
 
       {/* Search */}
@@ -200,7 +194,22 @@ const Registrations = () => {
           <h3 className="text-lg font-semibold text-white">Daftar Pendaftaran ({filteredRegistrations.length})</h3>
         </div>
 
-        {filteredRegistrations.length === 0 ? (
+        {loading ? (
+          <div className="divide-y divide-white/5">
+            {[...Array(5)].map((_, i) => (
+              <div key={i} className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="h-12 w-12 animate-pulse rounded-full bg-white/5" />
+                  <div className="flex-1 space-y-3">
+                    <div className="h-5 w-48 animate-pulse rounded bg-white/5" />
+                    <div className="h-4 w-32 animate-pulse rounded bg-white/5" />
+                  </div>
+                  <div className="h-12 w-32 animate-pulse rounded-xl bg-white/5" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : filteredRegistrations.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <ClipboardDocumentListIcon className="mx-auto h-12 w-12 text-gray-600" />
             <p className="mt-3 text-sm text-gray-400">{searchQuery ? "Tidak ditemukan hasil pencarian" : "Belum ada pendaftaran"}</p>
