@@ -5,7 +5,8 @@ Halo Rekan-rekan Karyawan,
 Untuk memastikan kenyamanan dan efisiensi waktu Bapak/Ibu dalam mendapatkan layanan fisioterapi, harap ikuti langkah-langkah pendaftaran melalui aplikasi **PhysioBook** berikut ini:
 
 ## 1. Akses Halaman Utama
-Buka aplikasi PhysioBook melalui browser Anda (Link akan dibagikan oleh tim Admin/Kesehatan).
+Buka aplikasi PhysioBook melalui browser Anda pada tautan berikut:
+**[https://fisioterapi.klinikppabib.com](https://fisioterapi.klinikppabib.com)** atau langsung ke halaman login **[https://fisioterapi.klinikppabib.com/login](https://fisioterapi.klinikppabib.com/login)**.
 
 ## 2. Masukkan Kode Akses
 *   Masukkan **4 digit kode akses** unik yang telah diberikan kepada Anda.
