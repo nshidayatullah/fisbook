@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { UsersIcon, PlusIcon, PencilIcon, TrashIcon, CheckIcon, KeyIcon } from "@heroicons/react/24/outline";
-import { getAllUsers, createUser, updateUserProfile, deleteUser } from "../../lib/api";
+import { getAllUsers, createUser, updateUserProfile, deleteUser, resetUserPassword } from "../../lib/api";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
 const Users = () => {
@@ -15,6 +15,7 @@ const Users = () => {
   const [showResetModal, setShowResetModal] = useState(false);
   const [creating, setCreating] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   const [createData, setCreateData] = useState({
     email: "",
@@ -33,6 +34,7 @@ const Users = () => {
     userId: null,
     userName: "",
     userEmail: "",
+    newPassword: "",
   });
 
   // Delete modal
@@ -156,8 +158,34 @@ const Users = () => {
       userId: u.id,
       userName: u.full_name || u.email,
       userEmail: u.email,
+      newPassword: "",
     });
     setShowResetModal(true);
+  };
+
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
+    if (!resetData.newPassword) {
+      setError("Password baru harus diisi");
+      return;
+    }
+
+    setResetting(true);
+    setError("");
+    setSuccess("");
+
+    try {
+      const { error: resetError } = await resetUserPassword(resetData.userId, resetData.newPassword);
+      if (resetError) throw resetError;
+
+      setSuccess(`Password untuk user "${resetData.userName}" berhasil direset`);
+      setShowResetModal(false);
+    } catch (err) {
+      console.error(err);
+      setError(err.message || "Gagal mereset password");
+    } finally {
+      setResetting(false);
+    }
   };
 
   const getRoleBadge = (role) => {
@@ -390,53 +418,33 @@ const Users = () => {
               <h3 className="text-lg font-semibold text-white">Reset Password User</h3>
             </div>
 
-            <div className="space-y-4 text-sm text-gray-300">
+            <form onSubmit={handleResetPassword} className="space-y-4">
               <div className="rounded-lg bg-gray-900/50 p-4 border border-white/5">
                 <p className="text-white font-medium">User: {resetData.userName}</p>
                 <p className="text-gray-400 mt-1">Email: {resetData.userEmail}</p>
               </div>
 
-              <div className="rounded-lg bg-yellow-500/10 border border-yellow-500/20 p-4">
-                <p className="text-yellow-400 font-medium mb-2">ℹ️ Cara Reset Password:</p>
-                <ol className="space-y-2 text-gray-300 list-decimal list-inside">
-                  <li>
-                    Buka <strong>Supabase Dashboard</strong>
-                  </li>
-                  <li>
-                    Pilih <strong>Authentication → Users</strong>
-                  </li>
-                  <li>
-                    Cari user: <code className="bg-gray-900 px-2 py-0.5 rounded text-yellow-400">{resetData.userEmail}</code>
-                  </li>
-                  <li>Klik pada user tersebut</li>
-                  <li>
-                    Klik <strong>"Reset Password"</strong> atau <strong>"Send recovery email"</strong>
-                  </li>
-                </ol>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">Password Baru</label>
+                <input
+                  type="password"
+                  required
+                  value={resetData.newPassword}
+                  onChange={(e) => setResetData({ ...resetData, newPassword: e.target.value })}
+                  className="block w-full rounded-lg bg-white/5 px-4 py-3 text-white border border-white/10 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  placeholder="Masukkan password baru"
+                />
               </div>
 
-              <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-4">
-                <p className="text-blue-400 font-medium mb-2">🔗 Quick Link:</p>
-                <a
-                  href={`https://supabase.com/dashboard/project/${import.meta.env.VITE_SUPABASE_URL?.split(".")[0]?.replace("https://", "")}/auth/users`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-300 hover:text-blue-200 underline break-all"
-                >
-                  Buka Supabase Authentication →
-                </a>
+              <div className="flex justify-end gap-3 mt-6">
+                <button type="button" onClick={() => setShowResetModal(false)} className="px-4 py-2 text-sm font-medium text-gray-400 hover:text-white">
+                  Batal
+                </button>
+                <button type="submit" disabled={resetting} className="rounded-lg bg-yellow-600 px-4 py-2 text-sm font-semibold text-white hover:bg-yellow-500 disabled:opacity-50">
+                  {resetting ? "Memproses..." : "Reset Password"}
+                </button>
               </div>
-
-              <div className="text-xs text-gray-500 border-t border-white/5 pt-3">
-                💡 <strong>Tips:</strong> Setelah reset, user akan menerima email untuk set password baru. Pastikan Email Auth sudah aktif di Supabase.
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button type="button" onClick={() => setShowResetModal(false)} className="rounded-lg bg-gray-700 px-4 py-2 text-sm font-semibold text-white hover:bg-gray-600">
-                Tutup
-              </button>
-            </div>
+            </form>
           </div>
         </div>
       )}

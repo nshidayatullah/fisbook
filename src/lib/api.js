@@ -230,6 +230,15 @@ export const deleteUser = async (id) => {
   }
 };
 
+export const resetUserPassword = async (id, password) => {
+  try {
+    const { data } = await api.post(`/api/users/${id}/reset-password`, { password });
+    return { data, error: null };
+  } catch (error) {
+    return { data: null, error: error.response?.data || error };
+  }
+};
+
 // Access Codes
 export const getAccessCodes = async () => {
   try {

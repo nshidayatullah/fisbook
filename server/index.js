@@ -128,6 +128,22 @@ app.delete('/api/users/:id', authenticateToken, requireSuperadmin, async (req, r
   }
 });
 
+app.post('/api/users/:id/reset-password', authenticateToken, requireSuperadmin, async (req, res) => {
+  const { password } = req.body;
+  if (!password) return res.status(400).json({ error: 'Password is required' });
+
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await prisma.user.update({
+      where: { id: req.params.id },
+      data: { password: hashedPassword }
+    });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // --- SLOTS ROUTES ---
 app.get('/api/slots', async (req, res) => {
   try {
