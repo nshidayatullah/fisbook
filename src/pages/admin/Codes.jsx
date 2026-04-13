@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { KeyIcon, ClipboardIcon, TrashIcon, CheckIcon, FunnelIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/outline";
 import { getAccessCodes, generateAccessCodes, deleteAccessCode, getWhatsAppMessageByName } from "../../lib/api";
+import { useAuth } from "../../hooks/useAuth";
 import ConfirmModal from "../../components/ui/ConfirmModal";
 
 import { SkeletonTableRow } from "../../components/ui/Skeleton";
 
 const Codes = () => {
+  const { user } = useAuth();
   const [codes, setCodes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
@@ -312,10 +314,12 @@ const Codes = () => {
                                 <button onClick={() => copyWhatsAppMessage(code.code, code.id)} className="rounded-lg p-2 text-gray-400 hover:bg-emerald-500/10 hover:text-emerald-400 transition-colors" title="Salin Pesan WhatsApp">
                                   {waCopiedId === code.id ? <CheckIcon className="h-5 w-5 text-emerald-400" /> : <ChatBubbleLeftRightIcon className="h-5 w-5" />}
                                 </button>
+                              </>
+                            )}
+                            {(!code.isUsed || user?.role === 'superadmin') && (
                                 <button onClick={() => openDeleteModal(code.id)} className="rounded-lg p-2 text-gray-400 hover:bg-red-500/10 hover:text-red-400 transition-colors" title="Hapus">
                                   <TrashIcon className="h-5 w-5" />
                                 </button>
-                              </>
                             )}
                           </div>
                         </td>

@@ -287,7 +287,27 @@ app.post('/api/access-codes/generate', authenticateToken, requireRoles(['superad
 
 app.delete('/api/access-codes/:id', authenticateToken, requireRoles(['superadmin', 'paramedic']), async (req, res) => {
   try {
-    await prisma.accessCode.delete({ where: { id: req.params.id } });
+    const codeId = req.params.id;
+    // Check if code exists and is used
+    const existingCode = await prisma.accessCode.findUnique({
+      where: { id: codeId },
+      include: { registration: true }
+    });
+
+    if (existingCode && existingCode.isUsed) {
+      if (req.user.role !== 'superadmin') {
+         return res.status(403).json({ error: "Hanya superadmin yang dapat menghapus kode yang terpakai" });
+      }
+      
+      // Cascade delete the associated registration if it exists
+      if (existingCode.registration) {
+         await prisma.registration.delete({
+           where: { id: existingCode.registration.id }
+         });
+      }
+    }
+
+    await prisma.accessCode.delete({ where: { id: codeId } });
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
