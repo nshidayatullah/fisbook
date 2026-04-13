@@ -19,7 +19,7 @@ const io = new Server(server, {
 });
 
 const prisma = new PrismaClient();
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'secret';
 
 app.use(cors());
